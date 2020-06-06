@@ -22,7 +22,7 @@
 			<link rel="stylesheet" type="text/css" href="https://bootswatch.com/4/cosmo/bootstrap.min.css">
 		</head>
 	<body>
-	<h1>Welcome to Milk Tea Shop Recommention Platform</h1>
+	<h1>Welcome to Milk Tea Shop Recommendation Platform</h1>
 	<form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
 	      <button type="submit" name="sign" class="btn btn-primary">Sign In</button>
 		  <button type="submit" name="register" class="btn btn-primary">Register</button>
