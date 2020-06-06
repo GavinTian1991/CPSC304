@@ -1,11 +1,20 @@
 <?php 
     require('config/db.php');
 
-    $query = 'SELECT Shop_Name, Address, Zip_Code, Phone_Number, 
+    $query = 'SELECT Shop_ID, Shop_Name, Address, Zip_Code, Phone_Number, 
             Has_Wifi, Good_For_Group, Price_ID FROM Milk_Tea_Shop';
     $result = mysqli_query($conn, $query);
     $posts = mysqli_fetch_all($result, MYSQLI_ASSOC);
-    //var_dump($posts);
+
+    if(isset($_POST['filter'])){
+        $region = $_POST['location'];
+        $query = "SELECT mts.Shop_ID, mts.Shop_Name, mts.Address, mts.Zip_Code, mts.Phone_Number, 
+        mts.Has_Wifi, mts.Good_For_Group, mts.Price_ID 
+        FROM Milk_Tea_Shop mts, Zipcode_To_Region ztr 
+        WHERE mts.Zip_Code = ztr.Zip_Code AND ztr.Region = '$region'";
+        $result = mysqli_query($conn, $query);
+        $posts = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    } 
 ?>
 
 <!DOCTYPE html>
@@ -17,7 +26,7 @@
     <link rel="stylesheet" type="text/css" href="https://bootswatch.com/4/cosmo/bootstrap.min.css">
 </head>
 <body>
-    <?php require('navbar.php'); ?>
+    <?php require('cnavbar.php'); ?>
     <div class="container">
         <table class="table table-hover">  <!-- We can change to card layout in order to add comment--> 
             <thead>
@@ -26,15 +35,16 @@
                 <th scope="col">Address</th>
                 <th scope="col">Zip Code</th>
                 <th scope="col">Phone Number</th>
-                <th scope="col">Max Group</th>
+                <th scope="col">Group</th>
                 <th scope="col">WiFi</th>
                 <th scope="col">Price Level</th>
+                <th scope="col">Sales Event</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach($posts as $post) : ?>
                     <tr>
-                        <td><?php echo $post['Shop_Name']; ?></td>
+                        <td ><a href="#"><?php echo $post['Shop_Name']; ?></a></td>
                         <td><?php echo $post['Address']; ?></td>
                         <td><?php echo $post['Zip_Code']; ?></td>
                         <td><?php echo $post['Phone_Number']; ?></td>
@@ -48,21 +58,34 @@
                             echo $price['Name']; 
                             ?>
                         </td>
+                        <td><?php 
+                            $shop_ID = $post['Shop_ID'];
+                            $query = "SELECT Event_Content From Holds_Sales_Event WHERE Shop_ID = '$shop_ID'";
+                            $result = mysqli_query($conn, $query);
+                            $event = mysqli_fetch_assoc($result);
+                            if(isset($event['Event_Content'])) {
+                                echo $event['Event_Content'];
+                            } else {
+                                echo 'None';
+                            }
+                            ?>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
+        <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
         <div class="container">
             <div class="row">
                 <div class="col-sm">
                     <select name="location" class="custom-select">
                         <option selected="">Location</option>
-                        <option value="1">Burnaby</option>
-                        <option value="2">Coquitlam</option>
-                        <option value="3">Downtown</option>
-                        <option value="4">Richmond</option>
-                        <option value="5">Surrey</option>
-                        <option value="6">Vancouver</option>
+                        <option value="401">Richmond</option>
+                        <option value="402">Vancouver</option>
+                        <option value="403">Burnaby</option>
+                        <option value="404">Surrey</option>
+                        <option value="405">Coquitlam</option>
+                        <option value="406">Downtown</option>
                     </select>
                 </div>
                 <div class="col-sm">
@@ -90,6 +113,7 @@
                 </div>
             </div>
         </div>
+        </form>
 	</div>
     <?php include('footer.php'); ?>
 </body>
