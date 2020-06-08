@@ -10,12 +10,28 @@
     $cur_Shop_ID = (int)$_SESSION['cur_mts_ID'];
     $cur_Customer_Name = $_SESSION['log_in_customer'];
 
+    $customerIDquery = "SELECT Account_ID FROM Account WHERE User_Name = '$cur_Customer_Name'";
+    $customerIDResult = mysqli_query($conn, $customerIDquery);
+    $customerID = mysqli_fetch_assoc($customerIDResult);
+
+    $cur_CustomerID = (int)$customerID['Account_ID'];
+
     $query = "SELECT Shop_Name FROM Milk_Tea_Shop WHERE Shop_ID = '$cur_Shop_ID'";
     $result = mysqli_query($conn, $query);
     $posts = mysqli_fetch_assoc($result);
 
-  } else {
-      echo 'MTS';
+  } 
+
+  $ratingquery = "SELECT Rating_Level FROM Comments_from_Customer WHERE Shop_ID = '$cur_Shop_ID'";
+  $ratingresult = mysqli_query($conn, $ratingquery);
+  $ratings = mysqli_fetch_all($ratingresult, MYSQLI_ASSOC);
+
+  $averrating = 0.0;
+  $ratingcount = 0;
+
+  foreach($ratings as $rating) {
+      $averrating = $averrating + $rating['Rating_Level'];
+      $ratingcount = $ratingcount + 1;
   }
 
   if(isset($_POST['submit_new_comment'])){
@@ -28,13 +44,6 @@
     $maxID = mysqli_fetch_assoc($maxCommentIDResult);
 
     $new_CommentID = (int)$maxID['max(Comment_ID)'] + 1;
-
-
-    $customerIDquery = "SELECT Account_ID FROM Account WHERE User_Name = '$cur_Customer_Name'";
-    $customerIDResult = mysqli_query($conn, $customerIDquery);
-    $customerID = mysqli_fetch_assoc($customerIDResult);
-
-    $cur_CustomerID = (int)$customerID['Account_ID'];
 
     $cur_Date = date('Y-m-d');
 
@@ -65,7 +74,58 @@
 <body>
     <?php require('cnavbar.php'); ?>
     <div class="jumbotron">
-        <h1 class="display-5"><?php echo $posts['Shop_Name']?></h1>
+        <div class="row">
+            <div class="col-sm">
+                <h1 class="display-5"><?php echo $posts['Shop_Name']?></h1>
+                <p>Current Rating: <?php
+                    if($ratingcount != 0) {
+                        echo $averrating / $ratingcount;
+                    } else {
+                        echo 'No Rating';
+                    }
+                ?></p>
+            </div>
+            <div class="col-sm">
+                <?php 
+                    $opentimequery = "SELECT Business_Day, Open_Time, Close_Time
+                    FROM Open_At_Business_Hour
+                    WHERE Shop_ID = '$cur_Shop_ID'
+                    ORDER BY 
+                         CASE
+                              WHEN Business_Day = 'Monday' THEN 1
+                              WHEN Business_Day = 'Tuesday' THEN 2
+                              WHEN Business_Day = 'Wednesday' THEN 3
+                              WHEN Business_Day = 'Thursday' THEN 4
+                              WHEN Business_Day = 'Friday' THEN 5
+                              WHEN Business_Day = 'Saturday' THEN 6
+                              WHEN Business_Day = 'Sunday' THEN 7
+                         END ASC;";
+                    $opentimeresult = mysqli_query($conn, $opentimequery);
+                    $opentimes = mysqli_fetch_all($opentimeresult, MYSQLI_ASSOC);
+                ?>
+                <p>Open Hours:</p>
+                <?php foreach($opentimes as $opentime) : ?>
+                    <p><?php echo $opentime['Business_Day']?>
+                    <?php echo $opentime['Open_Time']?>
+                    <?php echo $opentime['Close_Time']?>
+                    </p>
+                <?php endforeach; ?>
+            </div>
+            <div class="col-sm">
+                <p>Sales Event:
+                    <?php
+                        $salequery = "SELECT Event_Content From Holds_Sales_Event WHERE Shop_ID = '$cur_Shop_ID'";
+                        $saleresult = mysqli_query($conn, $salequery);
+                        $saleevent = mysqli_fetch_assoc($saleresult);
+                        if(isset($saleevent['Event_Content'])) {
+                            echo $saleevent['Event_Content'];
+                        } else {
+                            echo 'None';
+                        }
+                    ?>
+                </p>
+            </div>
+        </div>
     </div>
 
     <div class="card border-primary mb-3">

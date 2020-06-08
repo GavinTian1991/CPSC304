@@ -45,7 +45,7 @@
                 <th scope="col">Group</th>
                 <th scope="col">WiFi</th>
                 <th scope="col">Price Level</th>
-                <th scope="col">Sales Event</th>
+                <th scope="col">Rating</th>
                 </tr>
             </thead>
             <tbody>
@@ -73,13 +73,21 @@
                         </td>
                         <td><?php 
                             $shop_ID = $post['Shop_ID'];
-                            $query = "SELECT Event_Content From Holds_Sales_Event WHERE Shop_ID = '$shop_ID'";
-                            $result = mysqli_query($conn, $query);
-                            $event = mysqli_fetch_assoc($result);
-                            if(isset($event['Event_Content'])) {
-                                echo $event['Event_Content'];
+                            $ratingquery = "SELECT Rating_Level FROM Comments_from_Customer WHERE Shop_ID = '$shop_ID'";
+                            $ratingresult = mysqli_query($conn, $ratingquery);
+                            $ratings = mysqli_fetch_all($ratingresult, MYSQLI_ASSOC);
+
+                            $averrating = 0.0;
+                            $ratingcount = 0;
+
+                            foreach($ratings as $rating) {
+                                $averrating = $averrating + $rating['Rating_Level'];
+                                $ratingcount = $ratingcount + 1;
+                            }
+                            if($ratingcount != 0) {
+                                echo $averrating / $ratingcount;
                             } else {
-                                echo 'None';
+                                echo 'No Rating';
                             }
                             ?>
                         </td>
