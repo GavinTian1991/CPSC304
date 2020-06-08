@@ -1,19 +1,23 @@
 <?php 
     require('config/db.php');
 
-    $query = 'SELECT Shop_ID, Shop_Name, Address, Zip_Code, Phone_Number, 
+    if(session_status() !== PHP_SESSION_ACTIVE){
+        session_start();
+      }
+    
+    $mtsquery = 'SELECT Shop_ID, Shop_Name, Address, Zip_Code, Phone_Number, 
             Has_Wifi, Good_For_Group, Price_ID FROM Milk_Tea_Shop';
-    $result = mysqli_query($conn, $query);
-    $posts = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    $mtsresult = mysqli_query($conn, $mtsquery);
+    $mtsposts = mysqli_fetch_all($mtsresult, MYSQLI_ASSOC);
 
-    if(isset($_POST['filter'])){  //TODO: price level, drink type (rating?)
+    if(isset($_POST['filter'])){  //TODO: price level, drink type, rating filter
         $region = $_POST['location'];
         $query = "SELECT mts.Shop_ID, mts.Shop_Name, mts.Address, mts.Zip_Code, mts.Phone_Number, 
         mts.Has_Wifi, mts.Good_For_Group, mts.Price_ID 
         FROM Milk_Tea_Shop mts, Zipcode_To_Region ztr 
         WHERE mts.Zip_Code = ztr.Zip_Code AND ztr.Region = '$region'";
         $result = mysqli_query($conn, $query);
-        $posts = mysqli_fetch_all($result, MYSQLI_ASSOC);
+        $mtsposts = mysqli_fetch_all($result, MYSQLI_ASSOC);
     } 
 
     if(isset($_POST['gotoMTS'])){
@@ -49,7 +53,7 @@
                 </tr>
             </thead>
             <tbody>
-                <?php foreach($posts as $post) : ?>
+                <?php foreach($mtsposts as $post) : ?>
                     <tr>
                         <td>
                         <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
@@ -84,9 +88,13 @@
                                 $averrating = $averrating + $rating['Rating_Level'];
                                 $ratingcount = $ratingcount + 1;
                             }
-                            if($ratingcount != 0) {
-                                echo $averrating / $ratingcount;
+                            $tmpname = $post['Shop_Name'];
+                            if($ratingcount != 0) { 
+                                $avgrating = (float)$averrating / $ratingcount;
+                                $_SESSION[$tmpname] = $avgrating;
+                                 echo $avgrating;
                             } else {
+                                $_SESSION[$tmpname] = 0;
                                 echo 'No Rating';
                             }
                             ?>

@@ -1,7 +1,9 @@
 <?php
 
   require('config/db.php');
-  session_start();
+  if(session_status() !== PHP_SESSION_ACTIVE){
+    session_start();
+  }
 
   $cur_Shop_ID = '';
   $cur_Customer_Name = '';

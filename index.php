@@ -18,7 +18,7 @@
 <!DOCTYPE html>
 	<html>
 		<head>
-			<title>PHP Application</title>
+			<title>MTS Recommendation Platform</title>
 			<link rel="stylesheet" type="text/css" href="https://bootswatch.com/4/cosmo/bootstrap.min.css">
 		</head>
 	<body>
