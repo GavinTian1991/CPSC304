@@ -80,9 +80,13 @@
             <div class="col-sm">
                 <h1 class="display-5"><?php echo $posts['Shop_Name']?></h1>
                 <p>Current Rating: <?php
+                    $tmpname = $posts['Shop_Name'];
                     if($ratingcount != 0) {
-                        echo $averrating / $ratingcount;
+                        $avgrating = (float)$averrating / $ratingcount;
+                        $_SESSION[$tmpname] = $avgrating;
+                        echo $avgrating;
                     } else {
+                        $_SESSION[$tmpname] = 0;
                         echo 'No Rating';
                     }
                 ?></p>
