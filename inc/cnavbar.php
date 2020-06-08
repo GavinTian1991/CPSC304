@@ -10,6 +10,10 @@
     $cur_name = $_SESSION['log_in_customer'];
   }
 
+  if(isset($_POST['logout'])) {
+    header('Location: ../index.php');
+  }
+
 ?> 
  
  
@@ -27,8 +31,8 @@
           <a class="nav-link" href="#">Comments</a>
         </li>
       </ul>
-      <form class="form-inline my-2 my-lg-0">
-      <button class="btn btn-secondary my-2 my-sm-0" type="submit">Log Out</button>
-    </form>
+      <form class="form-inline my-2 my-lg-0" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+      <button class="btn btn-secondary my-2 my-sm-0" type="submit" name="logout">Log Out</button>
+      </form>
     </div>
   </nav>
