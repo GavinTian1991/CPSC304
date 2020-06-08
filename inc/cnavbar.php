@@ -1,5 +1,20 @@
+<?php
+
+  if(session_status() !== PHP_SESSION_ACTIVE){
+    session_start();
+  }
+
+  $cur_name = '';
+
+  if(isset($_SESSION['log_in_customer'])) {
+    $cur_name = $_SESSION['log_in_customer'];
+  }
+
+?> 
+ 
+ 
  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <a class="navbar-brand" href="customer.php">Home</a>
+    <a class="navbar-brand" href="customer.php"><?php echo $cur_name . ' '?>Home</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>

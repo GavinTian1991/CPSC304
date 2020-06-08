@@ -6,7 +6,7 @@
     $result = mysqli_query($conn, $query);
     $posts = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
-    if(isset($_POST['filter'])){
+    if(isset($_POST['filter'])){  //TODO: price level, drink type (rating?)
         $region = $_POST['location'];
         $query = "SELECT mts.Shop_ID, mts.Shop_Name, mts.Address, mts.Zip_Code, mts.Phone_Number, 
         mts.Has_Wifi, mts.Good_For_Group, mts.Price_ID 
@@ -15,6 +15,13 @@
         $result = mysqli_query($conn, $query);
         $posts = mysqli_fetch_all($result, MYSQLI_ASSOC);
     } 
+
+    if(isset($_POST['gotoMTS'])){
+        session_start();
+        $shop_ID = $_POST['gotoMTS'];
+        $_SESSION['cur_mts_ID'] = $shop_ID;
+        header('Location: mtshop.php');
+    }
 ?>
 
 <!DOCTYPE html>
@@ -44,7 +51,13 @@
             <tbody>
                 <?php foreach($posts as $post) : ?>
                     <tr>
-                        <td ><a href="#"><?php echo $post['Shop_Name']; ?></a></td>
+                        <td>
+                        <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+                            <button type="submit" name="gotoMTS" value=<?php echo $post['Shop_ID']?> class="btn btn-primary">                      <?php 
+                            echo $post['Shop_Name']; ?>
+                            </button>
+                        </form>
+                        </td>
                         <td><?php echo $post['Address']; ?></td>
                         <td><?php echo $post['Zip_Code']; ?></td>
                         <td><?php echo $post['Phone_Number']; ?></td>

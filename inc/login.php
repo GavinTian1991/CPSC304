@@ -5,6 +5,9 @@
 	$msgClass = '';
     
 	if(isset($_POST['submit_Customer'])){
+
+		session_start();
+
 		// Get Form Data
 		$name = mysqli_real_escape_string($conn, $_POST['name']);
 		$password = mysqli_real_escape_string($conn, $_POST['password']);
@@ -21,6 +24,7 @@
 			$user = mysqli_fetch_assoc($result);
 
 			if($user){
+				$_SESSION['log_in_customer'] = $name;
 				echo 'log in successfully!';
 				header('Location: customer.php');
 			} else {
