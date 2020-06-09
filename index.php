@@ -7,7 +7,7 @@
 	}
 
 	if(isset($_POST['register'])) {
-		header('Location: inc/register.php');
+		header('Location: inc/accounttype.php');
 	} 
 	
 	// Close Connection
@@ -26,7 +26,7 @@
 	<form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
 	      <button type="submit" name="sign" class="btn btn-primary">Sign In</button>
 		  <button type="submit" name="register" class="btn btn-primary">Register</button>
-		  <button type="submit" name="register" class="btn btn-primary">Browser</button>
+		  <button type="submit" name="browser" class="btn btn-primary">Browser</button>
     </form>
 	<?php require('inc/footer.php'); ?>
 	</body>
