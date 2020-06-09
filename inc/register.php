@@ -153,9 +153,11 @@
           <p>Customer Birthday (Customer Register Only): 
               <input type="text" name ="birthday" id="datepicker">
           </p>
+
 	      <br>
-	      <button type="submit" name="customer_register" class="btn btn-primary">Customer Register</button>
-          <button type="submit" name="owner_register" class="btn btn-primary">Owner Register</button>
+          <button type="submit" name="register" class="btn btn-primary">Register</button>
+<!--	      <button type="submit" name="customer_register" class="btn btn-primary">Customer Register</button>-->
+<!--          <button type="submit" name="owner_register" class="btn btn-primary">Owner Register</button>-->
       </form>
     </div>
     <?php require('footer.php'); ?>
