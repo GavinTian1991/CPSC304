@@ -24,18 +24,6 @@
 
   } 
 
-  $ratingquery = "SELECT Rating_Level FROM Comments_from_Customer WHERE Shop_ID = '$cur_Shop_ID'";
-  $ratingresult = mysqli_query($conn, $ratingquery);
-  $ratings = mysqli_fetch_all($ratingresult, MYSQLI_ASSOC);
-
-  $averrating = 0.0;
-  $ratingcount = 0;
-
-  foreach($ratings as $rating) {
-      $averrating = $averrating + $rating['Rating_Level'];
-      $ratingcount = $ratingcount + 1;
-  }
-
   if(isset($_POST['submit_new_comment'])){
 
     $new_comment = mysqli_real_escape_string($conn, $_POST['newcomment']); 
@@ -56,7 +44,34 @@
     var_dump($commentAddresult);
 
     if($commentAddresult){
-        header('Location: mtshop.php');
+
+        $ratingquery = "SELECT Rating_Level FROM Comments_from_Customer WHERE Shop_ID = '$cur_Shop_ID'";
+        $ratingresult = mysqli_query($conn, $ratingquery);
+        $ratings = mysqli_fetch_all($ratingresult, MYSQLI_ASSOC);
+      
+        $sumrating = 0.0;
+        $avgrating = 0.0;
+        $ratingcount = 0;
+      
+        foreach($ratings as $rating) {
+            $sumrating = $sumrating + $rating['Rating_Level'];
+            $ratingcount = $ratingcount + 1;
+        }
+
+        if($ratingcount != 0) { 
+            $avgrating = (float)$sumrating / $ratingcount;
+        } else {
+            $avgrating = 0.0;
+        }
+        $ratingsetquery = "UPDATE Milk_Tea_Shop 
+        SET Average_Rating = '$avgrating'
+        WHERE Shop_ID = '$cur_Shop_ID'";
+
+        if(mysqli_query($conn, $ratingsetquery)) {
+            header('Location: mtshop.php');
+        } else {
+            echo 'none';
+        }
     } else {
         echo 'ERROR: '. mysqli_error($conn);
         echo 'Added failed!';
@@ -80,15 +95,12 @@
             <div class="col-sm">
                 <h1 class="display-5"><?php echo $posts['Shop_Name']?></h1>
                 <p>Current Rating: <?php
-                    $tmpname = $posts['Shop_Name'];
-                    if($ratingcount != 0) {
-                        $avgrating = (float)$averrating / $ratingcount;
-                        $_SESSION[$tmpname] = $avgrating;
-                        echo $avgrating;
-                    } else {
-                        $_SESSION[$tmpname] = 0;
-                        echo 'No Rating';
-                    }
+                    $curRatingQuery = "SELECT Average_Rating FROM Milk_Tea_Shop WHERE 
+                    Shop_ID = '$cur_Shop_ID'";
+                    $shopRatingResult = mysqli_query($conn, $curRatingQuery);
+                    $shopCurRating = mysqli_fetch_assoc($shopRatingResult);
+                
+                    echo $shopCurRating['Average_Rating'];
                 ?></p>
             </div>
             <div class="col-sm">
@@ -237,7 +249,7 @@
                             </div>
                             <div class="col-sm">
                                 <label for="exampleSelect1">Rating</label>
-                                    <select class="form-control" name="newrating" required>
+                                    <select class="form-control" name="newrating" value="0" required>
                                         <option value="1">1</option>
                                         <option value="2">2</option>
                                         <option value="3">3</option>

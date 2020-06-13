@@ -31,7 +31,7 @@
 				echo 'log in successfully!';
 				header('Location: customer.php');
 			} else {
-				echo 'log failed!';
+				$msg = 'log failed!';
 				//echo 'ERROR: '. mysqli_error($conn);
 			}
 
@@ -68,11 +68,9 @@
 				header('Location: ownerprofile.php');
 			} else {
 				echo 'log failed!';
-				//echo 'ERROR: '. mysqli_error($conn);
 			}
 
 		} else {
-			// Failed
 			$msg = 'Please fill in all fields';
 			$msgClass = 'alert-danger';
 		}
