@@ -3,21 +3,60 @@
 
     if(session_status() !== PHP_SESSION_ACTIVE){
         session_start();
-      }
+    }
+
+    $msg = '';
+	$msgClass = 'alert-danger';
     
     $mtsquery = 'SELECT Shop_ID, Shop_Name, Address, Zip_Code, Phone_Number, 
             Has_Wifi, Good_For_Group, Price_ID FROM Milk_Tea_Shop';
     $mtsresult = mysqli_query($conn, $mtsquery);
     $mtsposts = mysqli_fetch_all($mtsresult, MYSQLI_ASSOC);
 
-    if(isset($_POST['filter'])){  //TODO: price level, drink type, rating filter
+    if(isset($_POST['filter'])){ 
         $region = $_POST['location'];
-        $query = "SELECT mts.Shop_ID, mts.Shop_Name, mts.Address, mts.Zip_Code, mts.Phone_Number, 
+        $pricelevel = $_POST['pricelevel'];
+        $ratinglevel = $_POST['ratinglevel'];
+
+        $regionquery = "SELECT mts.Shop_ID, mts.Shop_Name, mts.Address, mts.Zip_Code, mts.Phone_Number, 
         mts.Has_Wifi, mts.Good_For_Group, mts.Price_ID 
         FROM Milk_Tea_Shop mts, Zipcode_To_Region ztr 
         WHERE mts.Zip_Code = ztr.Zip_Code AND ztr.Region = '$region'";
-        $result = mysqli_query($conn, $query);
-        $mtsposts = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+        $pricequery = "SELECT mts.Shop_ID, mts.Shop_Name, mts.Address, mts.Zip_Code, mts.Phone_Number, 
+        mts.Has_Wifi, mts.Good_For_Group, mts.Price_ID 
+        FROM Milk_Tea_Shop mts 
+        WHERE mts.Price_ID >= '$pricelevel'";
+
+        $ratinglevelquery = "SELECT mts.Shop_ID, mts.Shop_Name, mts.Address, mts.Zip_Code, mts.Phone_Number, 
+        mts.Has_Wifi, mts.Good_For_Group, mts.Price_ID 
+        FROM Milk_Tea_Shop mts 
+        WHERE mts.Average_Rating >= '$ratinglevel'";
+
+        $filterquery = "";
+
+        if($region != 'none' && $pricelevel != 'none' && $ratinglevel != 'none') {
+            $filterquery = $regionquery . " INTERSECT " . $pricequery . " INTERSECT " . $ratinglevelquery;
+        } else if($region != 'none' && $pricelevel != 'none') {
+            $filterquery = $regionquery . " INTERSECT " . $pricequery;
+        } else if($region != 'none' && $ratinglevel != 'none') {
+            $filterquery = $regionquery . " INTERSECT " . $ratinglevelquery;
+        } else if($pricelevel != 'none' && $ratinglevel != 'none') {
+            $filterquery = $pricequery . " INTERSECT " . $ratinglevelquery;
+        }else if($region != 'none') {
+            $filterquery = $regionquery;
+        }else if($pricelevel != 'none') {
+            $filterquery = $pricequery;
+        }else if($ratinglevel != 'none') {
+            $filterquery = $ratinglevelquery;
+        }else {
+            $msg = 'No filter option selected!';
+        }
+
+        if($filterquery != "") {
+            $result = mysqli_query($conn, $filterquery);
+            $mtsposts = mysqli_fetch_all($result, MYSQLI_ASSOC);
+        }
     } 
 
     if(isset($_POST['gotoMTS'])){
@@ -38,6 +77,9 @@
 </head>
 <body>
     <?php require('cnavbar.php'); ?>
+    <?php if($msg != ''): ?>
+    		<div class="alert <?php echo $msgClass; ?>"><?php echo $msg; ?></div>
+    <?php endif; ?>
     <div class="container">
         <table class="table table-hover">  <!-- We can change to card layout in order to add comment--> 
             <thead>
@@ -81,22 +123,32 @@
                             $ratingresult = mysqli_query($conn, $ratingquery);
                             $ratings = mysqli_fetch_all($ratingresult, MYSQLI_ASSOC);
 
-                            $averrating = 0.0;
+                            $sumrating = 0.0;
                             $ratingcount = 0;
+                            $avgrating = 0.0;
 
                             foreach($ratings as $rating) {
-                                $averrating = $averrating + $rating['Rating_Level'];
+                                $sumrating = $sumrating + $rating['Rating_Level'];
                                 $ratingcount = $ratingcount + 1;
                             }
                             $tmpname = $post['Shop_Name'];
                             if($ratingcount != 0) { 
-                                $avgrating = (float)$averrating / $ratingcount;
-                                $_SESSION[$tmpname] = $avgrating;
-                                 echo $avgrating;
+                                $avgrating = (float)$sumrating / $ratingcount;
+                                //$_SESSION[$tmpname] = $avgrating;
                             } else {
-                                $_SESSION[$tmpname] = 0;
-                                echo 'No Rating';
+                                $avgrating = 0.0;
+                                //$_SESSION[$tmpname] = 0;
                             }
+                            $ratingsetquery = "UPDATE Milk_Tea_Shop 
+                            SET Average_Rating = '$avgrating'
+                            WHERE Shop_ID = '$shop_ID'";
+
+                            if(mysqli_query($conn, $ratingsetquery)) {
+                                echo $avgrating;
+                            } else {
+                                echo 'none';
+                            }
+
                             ?>
                         </td>
                     </tr>
@@ -108,7 +160,7 @@
             <div class="row">
                 <div class="col-sm">
                     <select name="location" class="custom-select">
-                        <option selected="">Location</option>
+                        <option selected="" value="none">Location</option>
                         <option value="401">Richmond</option>
                         <option value="402">Vancouver</option>
                         <option value="403">Burnaby</option>
@@ -118,33 +170,22 @@
                     </select>
                 </div>
                 <div class="col-sm">
-                    <select name="price" class="custom-select">
-                        <option selected="">Price Level</option>
-                        <option value="1">$</option>
-                        <option value="2">$$</option>
-                        <option value="3">$$$</option>
-                        <option value="4">$$$$</option>
+                    <select name="pricelevel" class="custom-select">
+                        <option selected="" value="none">Price Level</option>
+                        <option value="501">$</option>
+                        <option value="502">$$</option>
+                        <option value="503">$$$</option>
+                        <option value="504">$$$$</option>
                     </select>
                 </div>
                 <div class="col-sm">
                     <select name="ratinglevel" class="custom-select">
-                        <option selected="">Rating Above</option>
+                        <option selected="" value="none">Rating Above</option>
                         <option value="1">1</option>
                         <option value="2">2</option>
                         <option value="3">3</option>
                         <option value="4">4</option>
                         <option value="5">5</option>
-                    </select>
-                </div>
-                <div class="col-sm">
-                    <select name="drinktype" class="custom-select">
-                        <option selected="">Like Drink Type</option>
-                        <option value="1">Cream Cap Tea</option>
-                        <option value="2">Dessert</option>
-                        <option value="3">Fresh Tea</option>
-                        <option value="4">Fruit Tea</option>
-                        <option value="5">Milk Tea</option>
-                        <option value="6">Slush</option>
                     </select>
                 </div>
                 <div class="col-sm">
