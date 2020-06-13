@@ -1,51 +1,48 @@
 <?php
     require('config/db.php');
-	// Message Vars
+
 	$msg = '';
-	$msgClass = '';
+	$msgClass = 'alert-danger';
     
 	if(isset($_POST['submit_Customer'])){
 
-		session_start();
+		if(session_status() !== PHP_SESSION_ACTIVE){
+			session_start();
+		}
 
-		// Get Form Data
 		$name = mysqli_real_escape_string($conn, $_POST['name']);
 		$password = mysqli_real_escape_string($conn, $_POST['password']);
 
-		// Check Required Fields
 		if(!empty($name) && !empty($password)){
 
-			$query = "SELECT * FROM Account, Customer_Account 
+			$query = "SELECT a.Account_ID FROM Account a, Customer_Account c
 			WHERE User_Name = '$name' 
 			AND Password = '$password' 
-			AND Account.Account_ID = Customer_Account.Account_ID";
+			AND a.Account_ID = c.Account_ID";
 
 			$result = mysqli_query($conn, $query);
 			$user = mysqli_fetch_assoc($result);
 
 			if($user){
+				$curCustomerID = $user['Account_ID'];
 				$_SESSION['log_in_customer'] = $name;
+				$_SESSION['log_in_customer_id'] = $curCustomerID;
 				echo 'log in successfully!';
 				header('Location: customer.php');
 			} else {
-				echo 'log failed!';
+				$msg = 'log failed!';
 				//echo 'ERROR: '. mysqli_error($conn);
 			}
-
 		} else {
-			// Failed
 			$msg = 'Please fill in all fields';
-			$msgClass = 'alert-danger';
 		}
 	}
 
 
 	if(isset($_POST['submit_Owner'])){
-		// Get Form Data
 		$name = mysqli_real_escape_string($conn, $_POST['name']);
 		$password = mysqli_real_escape_string($conn, $_POST['password']);
 
-		// Check Required Fields
 		if(!empty($name) && !empty($password)){
 
 			$query = "SELECT * FROM Account, Business_Owner_Account 
@@ -58,14 +55,11 @@
 
 			if($user){
 				echo 'owner log in successfully!';
-				//header('Location: navbar.php');
 			} else {
 				echo 'log failed!';
-				//echo 'ERROR: '. mysqli_error($conn);
 			}
 
 		} else {
-			// Failed
 			$msg = 'Please fill in all fields';
 			$msgClass = 'alert-danger';
 		}

@@ -148,7 +148,6 @@
                             } else {
                                 echo 'none';
                             }
-
                             ?>
                         </td>
                     </tr>

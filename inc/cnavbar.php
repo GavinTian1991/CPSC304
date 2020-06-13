@@ -15,7 +15,7 @@
   }
 
 ?> 
- 
+
  
  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <a class="navbar-brand" href="customer.php"><?php echo $cur_name . ' '?>Home</a>
@@ -28,7 +28,7 @@
           <a class="nav-link" href="drinks.php">Drinks</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Profile</a>
+          <a class="nav-link" href="cprofile.php">Profile</a>
         </li>
       </ul>
       <form class="form-inline my-2 my-lg-0" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
