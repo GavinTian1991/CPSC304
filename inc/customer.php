@@ -5,8 +5,8 @@
         session_start();
       }
     
-    $mtsquery = 'SELECT Shop_ID, Shop_Name, Address, Zip_Code, Phone_Number, 
-            Has_Wifi, Good_For_Group, Price_ID FROM Milk_Tea_Shop';
+    $mtsquery = "SELECT Shop_ID, Shop_Name, Address, Zip_Code, Phone_Number, 
+            Has_Wifi, Good_For_Group, Price_ID FROM Milk_Tea_Shop";
     $mtsresult = mysqli_query($conn, $mtsquery);
     $mtsposts = mysqli_fetch_all($mtsresult, MYSQLI_ASSOC);
 
@@ -57,7 +57,7 @@
                     <tr>
                         <td>
                         <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-                            <button type="submit" name="gotoMTS" value=<?php echo $post['Shop_ID']?> class="btn btn-primary">                      <?php 
+                            <button type="submit" name="gotoMTS" value=<?php echo $post['Shop_ID'];?> class="btn btn-primary">                      <?php
                             echo $post['Shop_Name']; ?>
                             </button>
                         </form>

@@ -10,7 +10,7 @@
 
   if(isset($_SESSION['cur_mts_ID'])) {
     $cur_Shop_ID = (int)$_SESSION['cur_mts_ID'];
-    $cur_Customer_Name = $_SESSION['log_in_customer'];
+    $cur_Customer_Name = $_SESSION['logged_cust_name'];
 
     $customerIDquery = "SELECT Account_ID FROM Account WHERE User_Name = '$cur_Customer_Name'";
     $customerIDResult = mysqli_query($conn, $customerIDquery);

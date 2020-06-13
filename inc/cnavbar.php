@@ -4,21 +4,26 @@
     session_start();
   }
 
-  $cur_name = '';
+  $cur_cust_name = '';
+  $cur_cust_id = '';
 
-  if(isset($_SESSION['log_in_customer'])) {
-    $cur_name = $_SESSION['log_in_customer'];
+  if(isset($_SESSION['customer_logged_in'])) {
+      $cur_cust_name = $_SESSION['logged_cust_name'];
+      $cur_cust_id = $_SESSION['logged_cust_id'];
   }
 
   if(isset($_POST['logout'])) {
-    header('Location: ../index.php');
+      unset($_SESSION['logged_cust_name']);
+      unset($_SESSION['logged_cust_id']);
+      unset($_SESSION['customer_logged_in']);
+      header('Location: ../index.php');
   }
 
 ?> 
  
  
  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <a class="navbar-brand" href="customer.php"><?php echo $cur_name . ' '?>Home</a>
+    <a class="navbar-brand" href="customer.php"><?php echo $cur_cust_name . ' '?>Home</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>

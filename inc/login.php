@@ -3,28 +3,31 @@
 	// Message Vars
 	$msg = '';
 	$msgClass = '';
-    
-	if(isset($_POST['submit_Customer'])){
+    if(session_status() !== PHP_SESSION_ACTIVE){
+        session_start();
+    }
 
-		session_start();
-
-		// Get Form Data
-		$name = mysqli_real_escape_string($conn, $_POST['name']);
-		$password = mysqli_real_escape_string($conn, $_POST['password']);
-
+    if(isset($_POST['submit_Customer'])){
 		// Check Required Fields
-		if(!empty($name) && !empty($password)){
+		if(isset($_POST['loginEmail'], $_POST['loginPassword'])){
+            // Get Form Data
+            $email = mysqli_real_escape_string($conn, $_POST['loginEmail']);
+            $password = mysqli_real_escape_string($conn, $_POST['loginPassword']);
 
 			$query = "SELECT * FROM Account, Customer_Account 
-			WHERE User_Name = '$name' 
+			WHERE Email = '$email' 
 			AND Password = '$password' 
 			AND Account.Account_ID = Customer_Account.Account_ID";
 
 			$result = mysqli_query($conn, $query);
 			$user = mysqli_fetch_assoc($result);
+			//print_r($user);
 
 			if($user){
-				$_SESSION['log_in_customer'] = $name;
+				$_SESSION['logged_cust_name'] = $user['User_Name'];
+				$_SESSION['logged_cust_id'] = $user['Account_ID'];
+				echo $_SESSION['logged_cust_name'].$_SESSION['logged_cust_id'];
+				$_SESSION['customer_logged_in'] = TRUE;
 				echo 'log in successfully!';
 				header('Location: customer.php');
 			} else {
@@ -34,22 +37,22 @@
 
 		} else {
 			// Failed
-			$msg = 'Please fill in all fields';
+			$msg = 'Please fill both the username and password fields!';
 			$msgClass = 'alert-danger';
 		}
 	}
 
 
 	if(isset($_POST['submit_Owner'])){
-		// Get Form Data
-		$name = mysqli_real_escape_string($conn, $_POST['name']);
-		$password = mysqli_real_escape_string($conn, $_POST['password']);
 
 		// Check Required Fields
-		if(!empty($name) && !empty($password)){
+		if(isset($_POST['loginEmail'], $_POST['loginPassword'])){
+            // Get Form Data
+            $email = mysqli_real_escape_string($conn, $_POST['loginEmail']);
+            $password = mysqli_real_escape_string($conn, $_POST['loginPassword']);
 
 			$query = "SELECT * FROM Account, Business_Owner_Account 
-			WHERE User_Name = '$name' 
+			WHERE Email = '$email' 
 			AND Password = '$password' 
 			AND Account.Account_ID = Business_Owner_Account.Account_ID";
 
@@ -57,8 +60,12 @@
 			$user = mysqli_fetch_assoc($result);
 
 			if($user){
+                $_SESSION['logged_owner_name'] = $user['User_Name'];
+                $_SESSION['logged_owner_id'] = $user['Account_ID'];
+                echo $_SESSION['logged_owner_name'].$_SESSION['logged_owner_id'];
+                $_SESSION['owner_logged_in'] = TRUE;
 				echo 'owner log in successfully!';
-				//header('Location: navbar.php');
+				header('Location: ownerprofile.php');
 			} else {
 				echo 'log failed!';
 				//echo 'ERROR: '. mysqli_error($conn);
@@ -81,7 +88,7 @@
 	<nav class="navbar navbar-default">
       <div class="container">
         <div class="navbar-header">    
-			<p class="navbar-brand">User Sign In</p>
+			<h1 class="navbar-brand">User Sign In</h1>
         </div>
       </div>
     </nav>
@@ -91,12 +98,12 @@
     	<?php endif; ?>
       <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
 	      <div class="form-group">
-		      <label>Name</label>
-		      <input type="text" name="name" class="form-control" value="<?php echo isset($_POST['name']) ? $name : ''; ?>">
+		      <label>Email</label>
+		      <input type="text" name="loginEmail" class="form-control" value="<?php echo isset($_POST['loginEmail']) ? $email : ''; ?>">
 	      </div>
 		  <div class="form-group">
 	      	<label>Password</label>
-	      	<input type="password" name="password" class="form-control" value="">
+	      	<input type="password" name="loginPassword" class="form-control" value="">
 	      </div>
 	      <br>
 	      <button type="submit" name="submit_Customer" class="btn btn-primary">Customer Sign In</button>

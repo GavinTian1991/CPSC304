@@ -23,7 +23,7 @@
 <body>
 <h2 style="text-align:center">Welcome! What type of user account are you attempting to register?</h2>
 
-<div class="container">
+<div class="container center">
     <div class="vertical-center">
         <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
             <button type="submit" name="Customer" class="btn btn-primary">Customer</button>
