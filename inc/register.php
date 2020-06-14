@@ -53,7 +53,7 @@
         $email = mysqli_real_escape_string($conn, $_POST['email']);
         $password = mysqli_real_escape_string($conn, $_POST['password']);
         $re_password = mysqli_real_escape_string($conn, $_POST['re_password']);
-        $birthday = mysqli_real_escape_string($conn, $_POST['birthday']);
+        $birthday = mysqli_real_escape_string($conn, $_POST['birthday']);  
 
         if(!empty($name) && !empty($password) && !empty($re_password) && !empty($birthday)) {
             $validEmail = filter_var($email, FILTER_VALIDATE_EMAIL);
@@ -92,11 +92,6 @@
             }
         }
     }
-
-
-// Close Connection
-// mysqli_close($conn);
-
 ?>
  
  
