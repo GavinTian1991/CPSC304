@@ -5,6 +5,9 @@
     session_start();
   }
 
+  $msg = '';
+  $msgClass = '';
+
   $cur_Shop_ID = '';
   $cur_Customer_Name = '';
 
@@ -44,6 +47,8 @@
     var_dump($commentAddresult);
 
     if($commentAddresult){
+        $msg = 'Comment added successfully!';
+        $msgClass = 'alert-success';
 
         $ratingquery = "SELECT Rating_Level FROM Comments_from_Customer WHERE Shop_ID = '$cur_Shop_ID'";
         $ratingresult = mysqli_query($conn, $ratingquery);
@@ -73,8 +78,8 @@
             echo 'none';
         }
     } else {
-        echo 'ERROR: '. mysqli_error($conn);
-        echo 'Added failed!';
+        $msg = 'You have already comment this shop!';
+        $msgClass = 'alert-danger';
     }
   }
 
@@ -156,13 +161,13 @@
                         $dresult = mysqli_query($conn, $dquery);
                         $drinks = mysqli_fetch_all($dresult, MYSQLI_ASSOC);
                     ?>
-                    <div class="row">
                         <?php foreach($drinks as $drink) : ?>
+                            <div class="row">
                             <div class="col-sm">
                                 <p class="text-primary"><?php echo $drink['Drink_Name']?></p>
                             </div>
                             <div class="col-sm">
-                                <p class="text-secondary">Des: 
+                                <p class="text-secondary">
                                     <?php 
                                         if($drink['Description'] != ""){
                                             echo $drink['Description'];
@@ -185,8 +190,9 @@
                                 }
                                 ?></p>
                             </div>
+                        </div>
                         <?php endforeach; ?>
-                    </div>
+                    
                 </div>
             </div>
 
