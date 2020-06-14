@@ -99,7 +99,7 @@ CREATE TABLE Milk_Tea_Shop (
         Good_For_Group integer,
         Price_ID integer NOT NULL DEFAULT 599,
         Owner_ID integer NOT NULL,
-        Average_Rating real,
+        Average_Rating real DEFAULT 0,
         UNIQUE (Address, Zip_Code),
         UNIQUE (Shop_Name, Zip_Code),
         FOREIGN KEY (Zip_Code) REFERENCES Zipcode_To_Region(Zip_Code) ON UPDATE CASCADE,

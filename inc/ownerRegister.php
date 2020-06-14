@@ -128,7 +128,7 @@
           <p class="navbar-brand">Shop Owner Register</p>
         </div>
       </div>
-    </nav>
+ </nav>
  <div class="container">	
         <?php if($msg != ''): ?>
     		<div class="alert <?php echo $msgClass; ?>"><?php echo $msg; ?></div>
@@ -164,7 +164,7 @@
           <button type="submit" name="register" class="btn btn-primary">Register</button>
 	      <button type="submit" name="cancel" class="btn btn-primary">Cancel</button>
       </form>
-    </div>
+ </div>
     <?php require('footer.php'); ?>
  </body>
  </html>

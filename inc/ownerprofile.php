@@ -5,6 +5,10 @@
     }
     $cur_owner_id = '';
     $cur_owner_name = '';
+    $cur_owner_has_store = False;
+
+    $msg = '';
+    $msgClass = '';
     if(!isset($_SESSION['owner_logged_in']))
     {
         header('Location:../index.php');
@@ -18,10 +22,13 @@
     }
     settype($cur_owner_id, "integer");
     $account_sql = "SELECT A.Account_ID AS ID, A.User_Name AS username, A.Email AS email, BA.Business_License AS license FROM account AS A, business_owner_account AS BA
-    WHERE A.Account_ID = $cur_owner_id AND A.Account_ID = BA.Account_ID";
+    WHERE A.Account_ID = '$cur_owner_id' AND A.Account_ID = BA.Account_ID";
     $result = mysqli_query($conn, $account_sql);
 	$profile = mysqli_fetch_assoc($result);
-	print_r($profile);
+    // free the $result from memory (good practise)
+    mysqli_free_result($result);
+    // close connection
+	//print_r($profile);
     if($profile)
     {
         $id = $profile['ID'];
@@ -31,17 +38,32 @@
     }
     else
     {
-        echo 'Failed to fetch user profile!';
+        $msgClass = 'alert-dismissible alert-alert';
+        $msg = "Failed find your profile information";
+//        unset($_SESSION['owner_logged_in']);
+//        unset($_SESSION['logged_owner_name']);
+//        unset($_SESSION['logged_owner_id']);
+//        header('Location: ../index.php');
+//        exit;
     }
     $store_sql = "SELECT Shop_ID, Shop_Name, Address FROM milk_tea_shop WHERE Owner_ID = $cur_owner_id";
     $result = mysqli_query($conn, $store_sql);
     $stores = mysqli_fetch_all($result,MYSQLI_ASSOC);
-    print_r($stores);
+    // free the $result from memory (good practise)
+    mysqli_free_result($result);
+    //print_r($stores);
     if(!$stores)
     {
-        echo "Failed to fetch store information";
+        $cur_owner_has_store = False;
+        $msgClass = 'alert-dismissible alert-primary';
+        $msg = "We don't find your store information!";
     }
-
+    else
+    {
+        $cur_owner_has_store = True;
+    }
+    // close connection
+    mysqli_close($conn);
 ?>
 
 <!DOCTYPE html>
@@ -86,44 +108,47 @@
     </div>
     <div class="tab-pane fade show" id="stores">
         <div class="container">
-            <table class = "table table-hover">
-                <thead>
-                    <tr>
-                        <th scope="col">Edit</th>
-                        <th scope="col">Shop Name</th>
-                        <th scope="col">Shop Address</th>
-                        <th scope="col">Details</th>
-                        <th scope="col">Delete</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach($stores as $store) :?>
-                    <tr>
-                        <td>
-                            <form method="post" action="editstore.php">
-                                <button type="submit" name="editstore" value=<?= $store['Shop_ID'];?> class="btn btn-primary">
-                                Edit
-                                </button>
-                            </form>
-                        </td>
-                        <td><?= $store['Shop_Name'];?></td>
-                        <td><?= $store['Address'];?></td>
-                        <td>
-                            <a class="nav-link" href="shopmanage.php?id=<?= $store['Shop_ID']?>">
-                            More</a>
-                        </td>
-                        <td>
-                            <form method="post" action="editstore.php">
-                                <button type="submit" name="editstore" value=<?=$_SERVER['PHP_SELF'];?> class="btn btn-primary">
-                                X
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
-
-            </table>
+            <?php if($cur_owner_has_store):?>
+                <table class = "table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">Edit</th>
+                            <th scope="col">Shop Name</th>
+                            <th scope="col">Shop Address</th>
+                            <th scope="col">Details</th>
+                            <th scope="col">Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach($stores as $store) :?>
+                        <tr>
+                            <td>
+                                <form method="post" action="editstore.php">
+                                    <button type="submit" name="editstore" value=<?= $store['Shop_ID'];?> class="btn btn-primary">
+                                    Edit
+                                    </button>
+                                </form>
+                            </td>
+                            <td><?= $store['Shop_Name'];?></td>
+                            <td><?= $store['Address'];?></td>
+                            <td>
+                                <a class="nav-link" href="shopmanage.php?id=<?= $store['Shop_ID']?>">
+                                More</a>
+                            </td>
+                            <td>
+                                <form method="post" action="editstore.php">
+                                    <button type="submit" name="editstore" value=<?=$_SERVER['PHP_SELF'];?> class="btn btn-primary">
+                                    X
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php else: ?>
+                <p>You don't have any store under your name yet, create your first store!!! </p>
+            <?php endif;?>
         </div>
     </div>
     <div class="tab-pane fade show" id="comments">

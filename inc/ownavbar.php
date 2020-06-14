@@ -31,7 +31,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Owner Profile</title>
     <link rel="stylesheet" type="text/css" href="https://bootswatch.com/4/cosmo/bootstrap.min.css">
-<!--    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </head>
@@ -41,7 +40,7 @@
         <div class="collapse navbar-collapse" >
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Add Store</a>
+                    <a class="nav-link" href="addstore.php">Add Store</a>
                 </li>
             </ul>
             <form class="form-inline my-2 my-lg-0" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">

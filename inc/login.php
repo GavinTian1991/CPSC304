@@ -2,7 +2,7 @@
     require('config/db.php');
 	// Message Vars
 	$msg = '';
-	$msgClass = '';
+	$msgClass = 'alert-danger';
     if(session_status() !== PHP_SESSION_ACTIVE){
         session_start();
     }
@@ -14,14 +14,14 @@
             $email = mysqli_real_escape_string($conn, $_POST['loginEmail']);
             $password = mysqli_real_escape_string($conn, $_POST['loginPassword']);
 
-			$query = "SELECT * FROM Account, Customer_Account 
+			$query = "SELECT a.Account_ID, a.User_Name FROM Account a, Customer_Account c
 			WHERE Email = '$email' 
 			AND Password = '$password' 
-			AND Account.Account_ID = Customer_Account.Account_ID";
+			AND a.Account_ID = c.Account_ID";
 
 			$result = mysqli_query($conn, $query);
 			$user = mysqli_fetch_assoc($result);
-			//print_r($user);
+			print_r($user);
 
 			if($user){
 				$_SESSION['logged_cust_name'] = $user['User_Name'];
@@ -38,7 +38,6 @@
 		} else {
 			// Failed
 			$msg = 'Please fill both the username and password fields!';
-			$msgClass = 'alert-danger';
 		}
 	}
 
@@ -51,10 +50,10 @@
             $email = mysqli_real_escape_string($conn, $_POST['loginEmail']);
             $password = mysqli_real_escape_string($conn, $_POST['loginPassword']);
 
-			$query = "SELECT * FROM Account, Business_Owner_Account 
+			$query = "SELECT a.Account_ID, a.User_Name FROM Account a, Business_Owner_Account ba
 			WHERE Email = '$email' 
 			AND Password = '$password' 
-			AND Account.Account_ID = Business_Owner_Account.Account_ID";
+			AND a.Account_ID = ba.Account_ID";
 
 			$result = mysqli_query($conn, $query);
 			$user = mysqli_fetch_assoc($result);
@@ -67,12 +66,11 @@
 				echo 'owner log in successfully!';
 				header('Location: ownerprofile.php');
 			} else {
-				echo 'log failed!';
+                $msg = 'log failed!';
 			}
 
 		} else {
-			$msg = 'Please fill in all fields';
-			$msgClass = 'alert-danger';
+            $msg = 'Please fill both the username and password fields!';
 		}
 	}
 ?>
