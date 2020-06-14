@@ -6,6 +6,7 @@
     }
     $msg = '';
     $msgClass = '';
+    $commentIndex = 0;
 
         
     $curCustomerName = '';
@@ -89,6 +90,33 @@
       }
     }
 
+
+    if(isset($_POST['submit_new_comment'])){
+
+      $newCommentindex = $_POST['submit_new_comment'];
+      $newCommentContent = $_POST['new_comment_array'][$newCommentindex];
+      $newCommentRating = $_POST['new_rating_array'][$newCommentindex];
+      $newCommentShopName = $_POST['new_comment_shop'][$newCommentindex];
+      $newCommentShopID = $_POST['new_comment_shop_ID'][$newCommentindex];
+      $newCommentDate = $_POST['new_comment_date'][$newCommentindex];
+
+
+      $accountCommentQuery = "UPDATE Comments_from_Customer 
+      SET Contents = '$newCommentContent', Rating_Level = '$newCommentRating'
+      WHERE Account_ID = '$curCustomerID' AND Shop_ID = '$newCommentShopID'";
+
+      $accountCommentResult = mysqli_query($conn, $accountCommentQuery);
+
+      if($accountCommentResult){
+          $msg = 'Comment update successfully!';
+          $msgClass = 'alert-success';
+      } else {
+        $msg = 'Comment update failed.';
+        $msgClass = 'alert-danger';
+      }
+
+    }
+
     $generalProfileQuery = "SELECT User_Name, Email FROM Account WHERE Account_ID = '$curCustomerID'";
     $generalProfileResult = mysqli_query($conn, $generalProfileQuery);
     $generalProfilePosts = mysqli_fetch_assoc($generalProfileResult);
@@ -122,6 +150,7 @@
     window.onload=function(){
       $("#general_button").hide();
       $("#password_button").hide();
+      //$(".btn-primary").hide();
     }
 </script>
 
@@ -158,7 +187,7 @@
               <div class="form-group">
                 <label>Birthday</label>
                 <br>
-                <input id="new_birthday_text" type="text" name ="new_birthday" id="datepicker" value="<?php echo $curCustomerBirthday?>">
+                <input id="new_birthday_text" type="text" name ="new_birthday" id="datepicker" value="<?php echo $curCustomerBirthday?>" required>
                 <script type="text/javascript">
                     $("#new_birthday_text").bind("change paste keyup", function() {
                       $("#general_button").show();
@@ -185,11 +214,13 @@
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" name="submit_new_general" class="btn btn-primary">Save changes</button>
+                    <button type="submit" name="submit_new_general" class="btn btn-secondary">Save changes</button>
                   </div>
                 </div>
               </div>
             </div>
+            <!-- Modal -->
+
 
 
 
@@ -224,7 +255,7 @@
                 </button>
 
 
-                            <!-- Modal -->
+            <!-- Modal -->
             <div class="modal fade" id="passwordModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -239,28 +270,68 @@
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" name="submit_new_password" class="btn btn-primary">Save changes</button>
+                    <button type="submit" name="submit_new_password" class="btn btn-secondary">Save changes</button>
                   </div>
                 </div>
               </div>
             </div>
-
-
-
-
-
-
-
-
           </div>
         </form>
       </div>
     </div>
+
+
+    <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
       <div class="card border-primary mb-3">
           <div class="card-header">Comment</div>
-          <div class="card-body">
-      </div>
-  </div>
+            <div class="card-body">
+                <?php 
+
+                  $cusCommentQuery = "SELECT cfc.Comment_ID, cfc.Contents, cfc.Rating_Level, cfc.Date, mts.Shop_Name, mts.Shop_ID
+                  FROM Comments_from_Customer cfc, Milk_Tea_Shop mts 
+                  WHERE cfc.Account_ID = '$curCustomerID' 
+                  AND cfc.Shop_ID = mts.Shop_ID";
+                  $cusCommentResult = mysqli_query($conn, $cusCommentQuery);
+                  $cusCommentPosts = mysqli_fetch_all($cusCommentResult, MYSQLI_ASSOC);
+                ?>
+                
+                <?php foreach($cusCommentPosts as $comment) : ?>
+                  <div class="row">
+                      <div class="col-sm">
+                        <div class="form-group">
+                          <input type="text" name="new_comment_array[]" class="form-control" value="<?php echo $comment['Contents']?>" required>
+                        </div>
+                      </div>
+                      <div class="col-sm">
+                          <select class="form-control" name="new_rating_array[]" required>
+                              <option selected="selected">
+                                <?php echo $comment['Rating_Level']?>
+                              </option>
+                              <option value="1">1</option>
+                              <option value="2">2</option>
+                              <option value="3">3</option>
+                              <option value="4">4</option>
+                              <option value="5">5</option>
+                          </select>
+                      </div>
+                      <div class="col-sm">
+                          <input type="text" name="new_comment_shop[]" class="form-control" value="<?php echo $comment['Shop_Name']?>" readonly="true" required>
+                      </div>
+                      <div class="col-sm">
+                        <input type="text" name="new_comment_date[]" class="form-control" value="<?php 
+                              $rd = $comment['Date'];
+                              $disrdate = date('Y-m-d',strtotime($rd));
+                              echo $disrdate?>" readonly="true" required>
+                      </div>
+                      <div class="col-sm">
+                        <input type="hidden" name="new_comment_shop_ID[]" value="<?php echo $comment['Shop_ID']?>">
+                        <button type="submit" name="submit_new_comment" value="<?php echo $commentIndex++?>" class="btn btn-primary">Submit</button>
+                      </div>
+                  </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+      </form>
    <?php include('footer.php'); ?>
 </body>
 </html>
