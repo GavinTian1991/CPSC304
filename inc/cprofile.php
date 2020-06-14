@@ -5,10 +5,10 @@
         session_start();
     }
     $msg = '';
-    $msgClass = 'alert-danger';
+    $msgClass = '';
 
         
-    $curCustomerName = $_SESSION['log_in_customer'];
+    $curCustomerName = '';
     $curCustomerID = $_SESSION['log_in_customer_id'];
 
 
@@ -22,6 +22,7 @@
 
         if($validEmail === false) {
             $msg = 'Please use a valid email.';
+            $msgClass = 'alert-danger';
         }
         else {
             $accountGeneralQuery = "UPDATE Account 
@@ -36,9 +37,11 @@
             $customerBirthdayResult = mysqli_query($conn, $customerBirthdayQuery);
 
             if($accountGeneralResult && $customerBirthdayResult){
-                echo 'update successfully!';
+                $msg = 'Update successfully!';
+                $msgClass = 'alert-success';
             } else {
-                echo 'Added failed!';
+                $msg = 'Update failed!';
+                $msgClass = 'alert-danger';
             }
         }
 
@@ -61,10 +64,13 @@
 
         if($oldDBPassword != $oldPassword) {
           $msg = 'Old input password is not correct.';
+          $msgClass = 'alert-danger';
         } else if($newPassword != $reNewPassowrd) {
           $msg = 'New password and re input passward is not the same.';
+          $msgClass = 'alert-danger';
         } else if ($oldDBPassword == $newPassword) {
           $msg = 'Old and new password is same.';
+          $msgClass = 'alert-danger';
         } else {
           $accountPasswordQuery = "UPDATE Account 
           SET Password = '$newPassword'
@@ -73,25 +79,27 @@
           $accountPasswordResult = mysqli_query($conn, $accountPasswordQuery);
 
           if($accountPasswordResult){
-              echo 'password update successfully!';
+              $msg = 'Password update successfully!';
+              $msgClass = 'alert-success';
           } else {
-              echo 'password failed!';
+            $msg = 'Update password failed.';
+            $msgClass = 'alert-danger';
           }
         }
       }
     }
 
-    $emailQuery = "SELECT Email FROM Account WHERE Account_ID = '$curCustomerID'";
-    $emailResult = mysqli_query($conn, $emailQuery);
-    $emailPosts = mysqli_fetch_assoc($emailResult);
+    $generalProfileQuery = "SELECT User_Name, Email FROM Account WHERE Account_ID = '$curCustomerID'";
+    $generalProfileResult = mysqli_query($conn, $generalProfileQuery);
+    $generalProfilePosts = mysqli_fetch_assoc($generalProfileResult);
 
     $birthdayQuery = "SELECT Birthdate FROM Customer_Account WHERE Account_ID = '$curCustomerID'";
     $birthdayResult = mysqli_query($conn, $birthdayQuery);
     $birthdayPosts = mysqli_fetch_assoc($birthdayResult);
 
-    $curCustomerEmail = $emailPosts['Email'];
+    $curCustomerEmail = $generalProfilePosts['Email'];
+    $curCustomerName = $generalProfilePosts['User_Name'];
     $curCustomerBirthday = $birthdayPosts['Birthdate'];
-
 
 ?>
 
