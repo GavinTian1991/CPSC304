@@ -91,26 +91,78 @@
     }
 
 
-    if(isset($_POST['submit_new_comment'])){
+    if(isset($_POST['submit_new_comment']) || isset($_POST['delete_comment'])){
 
-      $newCommentindex = $_POST['submit_new_comment'];
+      if(isset($_POST['submit_new_comment'])) {
+        $newCommentindex = $_POST['submit_new_comment'];
+      } else {
+        $newCommentindex = $_POST['delete_comment'];
+      }
+
       $newCommentContent = $_POST['new_comment_array'][$newCommentindex];
       $newCommentRating = $_POST['new_rating_array'][$newCommentindex];
       $newCommentShopName = $_POST['new_comment_shop'][$newCommentindex];
       $newCommentShopID = $_POST['new_comment_shop_ID'][$newCommentindex];
       $newCommentDate = $_POST['new_comment_date'][$newCommentindex];
 
+      $accountCommentResult = 0;
+      $commentDeleteResult = 0;
 
-      $accountCommentQuery = "UPDATE Comments_from_Customer 
-      SET Contents = '$newCommentContent', Rating_Level = '$newCommentRating'
-      WHERE Account_ID = '$curCustomerID' AND Shop_ID = '$newCommentShopID'";
 
-      $accountCommentResult = mysqli_query($conn, $accountCommentQuery);
+      if(isset($_POST['submit_new_comment'])) {
+        
+        $accountCommentQuery = "UPDATE Comments_from_Customer 
+        SET Contents = '$newCommentContent', Rating_Level = '$newCommentRating'
+        WHERE Account_ID = '$curCustomerID' AND Shop_ID = '$newCommentShopID'";
 
-      if($accountCommentResult){
+        $accountCommentResult = mysqli_query($conn, $accountCommentQuery);
+
+      }
+
+      if(isset($_POST['delete_comment'])) {
+
+        $commentDeleteQuery = "DELETE FROM Comments_from_Customer 
+        WHERE Account_ID = '$curCustomerID' AND Shop_ID = '$newCommentShopID'";
+
+        $commentDeleteResult = mysqli_query($conn, $commentDeleteQuery);
+
+      }
+
+
+
+      //update current shop rating
+      $ratingquery = "SELECT Rating_Level FROM Comments_from_Customer WHERE Shop_ID = '$newCommentShopID'";
+      $ratingresult = mysqli_query($conn, $ratingquery);
+      $ratings = mysqli_fetch_all($ratingresult, MYSQLI_ASSOC);
+    
+      $sumrating = 0.0;
+      $avgrating = 0.0;
+      $ratingcount = 0;
+    
+      foreach($ratings as $rating) {
+          $sumrating = $sumrating + $rating['Rating_Level'];
+          $ratingcount = $ratingcount + 1;
+      }
+
+      if($ratingcount != 0) { 
+          $avgrating = (float)$sumrating / $ratingcount;
+      } else {
+          $avgrating = 0.0;
+      }
+      $ratingsetquery = "UPDATE Milk_Tea_Shop 
+      SET Average_Rating = '$avgrating'
+      WHERE Shop_ID = '$newCommentShopID'";
+
+      $shopAverageRatingResult = mysqli_query($conn, $ratingsetquery);
+
+      if($accountCommentResult && $shopAverageRatingResult){
           $msg = 'Comment update successfully!';
           $msgClass = 'alert-success';
-      } else {
+      } else if ($commentDeleteResult && $shopAverageRatingResult){
+          $msg = 'Comment delete successfully!';
+          $msgClass = 'alert-success';
+      }
+      else {
         $msg = 'Comment update failed.';
         $msgClass = 'alert-danger';
       }
@@ -325,7 +377,10 @@
                       </div>
                       <div class="col-sm">
                         <input type="hidden" name="new_comment_shop_ID[]" value="<?php echo $comment['Shop_ID']?>">
-                        <button type="submit" name="submit_new_comment" value="<?php echo $commentIndex++?>" class="btn btn-primary">Submit</button>
+                        <button type="submit" name="submit_new_comment" value="<?php echo $commentIndex?>" class="btn btn-primary">Submit</button>
+                      </div>
+                      <div class="col-sm">
+                        <button type="submit" name="delete_comment" value="<?php echo $commentIndex++?>" class="btn btn-warning">Delete</button>
                       </div>
                   </div>
                 <?php endforeach; ?>
