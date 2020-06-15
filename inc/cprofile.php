@@ -309,7 +309,7 @@
               <div class="card-body">
                 <div class="form-group">
                     <label>Old Password</label>
-                    <input id="old_password_input" type="text" name="old_pass" class="form-control" value="" required>
+                    <input id="old_password_input" type="password" name="old_pass" class="form-control" value="" required>
                     <script type="text/javascript">
                     $("#old_password_input").bind("change paste keyup", function() {
                       $("#password_button").show();
@@ -318,11 +318,11 @@
                 </div>
                 <div class="form-group">
                     <label>New Password</label>
-                    <input type="text" name="new_pass" class="form-control" value="" required>
+                    <input type="password" name="new_pass" class="form-control" value="" required>
                 </div>
                 <div class="form-group">
                     <label>Re New Password</label>
-                    <input type="text" name="re_new_pass" class="form-control" value="" required>
+                    <input type="password" name="re_new_pass" class="form-control" value="" required>
                   </div>
                 </div>
                 <button id="password_button" type="button" class="btn btn-primary" data-toggle="modal" data-target="#passwordModal">
