@@ -94,6 +94,18 @@
         $mtsposts = mysqli_fetch_all($result, MYSQLI_ASSOC);
     }
 
+    $favoredByAllSearchPosts = [];
+    if(isset($_POST['favored_by_all_search'])){
+        $favoredByAllSearchQuery = "SELECT mts.Shop_Name, mts.Zip_Code From Milk_Tea_Shop mts 
+        WHERE NOT EXISTS ((SELECT ca.Account_ID FROM Customer_Account ca) EXCEPT 
+                          (SELECT fb.Customer_Account_ID FROM Favored_by fb WHERE fb.Shop_ID = mts.Shop_ID))";
+
+        $favoredByAllSearchResult = mysqli_query($conn, $favoredByAllSearchQuery);
+        $favoredByAllSearchPosts = mysqli_fetch_all($favoredByAllSearchResult, MYSQLI_ASSOC);
+    }
+
+
+
     if(isset($_POST['gotoMTS'])){
         session_start();
         $shop_ID = $_POST['gotoMTS'];
@@ -258,6 +270,32 @@
                             $("#shop_name_search_but").attr("disabled", false);
                             });
                         </script>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <br>
+        <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm">
+                        <button type="submit" name="favored_by_all_search" class="btn btn-primary">Which shop(s) favored by all customers?</button>
+                    </div>
+                    <div class="col-sm">
+                        <?php if (empty($favoredByAllSearchPosts)): ?>
+                            <p>No shop favored by all customers</p>
+                        <?php else: ?>
+                        <?php foreach($favoredByAllSearchPosts as $favoredByShop) : ?>
+                            <div class="row">
+                                <div class="col-sm">
+                                    <p><?php echo $favoredByShop['Shop_Name']?></p>
+                                </div>
+                                <div class="col-sm">
+                                    <p><?php echo $favoredByShop['Zip_Code']?></p>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>    
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
