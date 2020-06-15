@@ -125,8 +125,6 @@
 
       }
 
-
-
       //update current shop rating
       $ratingquery = "SELECT Rating_Level FROM Comments_from_Customer WHERE Shop_ID = '$newCommentShopID'";
       $ratingresult = mysqli_query($conn, $ratingquery);
@@ -166,6 +164,29 @@
 
     }
 
+    if(isset($_POST['gotoMTS'])){
+      session_start();
+      $shop_ID = $_POST['gotoMTS'];
+      $_SESSION['cur_mts_ID'] = $shop_ID;
+      header('Location: mtshop.php');
+    }
+
+    if(isset($_POST['disLikeShop'])){
+      $disLikeShopID = $_POST['disLikeShop'];
+      $disLikeShopQuery = "DELETE FROM Favored_by 
+      WHERE Shop_ID = '$disLikeShopID' AND Customer_Account_ID = '$curCustomerID'";
+  
+      $disLikeShopResult = mysqli_query($conn, $disLikeShopQuery);
+      if($disLikeShopResult) {
+          $msg = 'You dislike this shop!';
+          $msgClass = 'alert-success';
+      } else {
+          $msg = 'Dislike this shop failed!';
+          $msgClass = 'alert-danger';
+      }
+    }
+
+
     $generalProfileQuery = "SELECT User_Name, Email FROM Account WHERE Account_ID = '$curCustomerID'";
     $generalProfileResult = mysqli_query($conn, $generalProfileQuery);
     $generalProfilePosts = mysqli_fetch_assoc($generalProfileResult);
@@ -177,6 +198,11 @@
     $curCustomerEmail = $generalProfilePosts['Email'];
     $curCustomerName = $generalProfilePosts['User_Name'];
     $curCustomerBirthday = $birthdayPosts['Birthdate'];
+
+    $currentLikeShopQuery = "SELECT mts.Shop_Name, fb.Shop_ID FROM Favored_by fb, Milk_Tea_Shop mts 
+    WHERE fb.Shop_ID = mts.Shop_ID AND fb.Customer_Account_ID = '$curCustomerID'";
+    $currentLikeShopResult = mysqli_query($conn, $currentLikeShopQuery);
+    $currentLikeShopPosts = mysqli_fetch_all($currentLikeShopResult, MYSQLI_ASSOC);
 
 ?>
 
@@ -327,6 +353,25 @@
           </div>
         </form>
       </div>
+      <div class="col-sm">
+      <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+      <div class="card border-primary mb-3" style="max-width: 30rem;">
+        <div class="card-header">Shop Like</div>
+        <div class="card-body">
+          <?php foreach($currentLikeShopPosts as $likeShop) : ?>
+            <button type="submit" name="gotoMTS" value=<?php echo $likeShop['Shop_ID']?> class="btn btn-primary"><?php 
+              echo $likeShop['Shop_Name']; ?>
+            </button>
+            <button type="submit" name="disLikeShop" value=<?php echo $likeShop['Shop_ID']?> class="btn btn-warning"><?php 
+              echo 'dislike'; ?>
+            </button>
+            <br>
+            <br>
+          <?php endforeach; ?>
+        </div>
+      </div>
+      </div>
+      </form>
     </div>
 
 

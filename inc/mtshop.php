@@ -14,6 +14,8 @@
 
   $cur_Shop_ID = '';
   $cur_Customer_Name = '';
+  $cur_CustomerID = '';
+  $likeThisShop = false;
 
   if(isset($_SESSION['cur_mts_ID'])) {
     $cur_Shop_ID = (int)$_SESSION['cur_mts_ID'];
@@ -25,6 +27,15 @@
         $customerID = mysqli_fetch_assoc($customerIDResult);
     
         $cur_CustomerID = (int)$customerID['Account_ID'];
+
+        $customerLikeShopQuery = "SELECT * FROM Favored_by WHERE Shop_ID = '$cur_Shop_ID' 
+        AND Customer_Account_ID = '$cur_CustomerID'";
+
+        $customerLikeShopResult = mysqli_query($conn, $customerLikeShopQuery);
+        $customerLikeShopPost = mysqli_fetch_assoc($customerLikeShopResult);
+        if($customerLikeShopPost) {
+            $likeThisShop = true;
+        } 
     }
 
 
@@ -89,6 +100,38 @@
         $msgClass = 'alert-danger';
     }
   }
+
+
+  if(isset($_POST['like_this_shop'])){
+    $shopLikeQuery = "INSERT INTO Favored_by 
+    VALUES('$cur_Shop_ID', '$cur_CustomerID')";
+    $shopLikeResult = mysqli_query($conn, $shopLikeQuery);
+    if($shopLikeResult) {
+        $likeThisShop = true;
+        $msg = 'You like this shop!';
+        $msgClass = 'alert-success';
+    } else {
+        $msg = 'Like this shop failed!';
+        $msgClass = 'alert-danger';
+    }
+  }
+
+  if(isset($_POST['dislike_this_shop'])){
+
+    $disLikeShopQuery = "DELETE FROM Favored_by 
+    WHERE Shop_ID = '$cur_Shop_ID' AND Customer_Account_ID = '$cur_CustomerID'";
+
+    $disLikeShopResult = mysqli_query($conn, $disLikeShopQuery);
+    if($disLikeShopResult) {
+        $likeThisShop = false;
+        $msg = 'You dislike this shop!';
+        $msgClass = 'alert-success';
+    } else {
+        $msg = 'Dislike this shop failed!';
+        $msgClass = 'alert-danger';
+    }
+  }
+  
 
 ?>
 
@@ -158,6 +201,17 @@
                     ?>
                 </p>
             </div>
+            <?php if ($cur_name != 'anonymous'): ?>
+                <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+                <div class="col-sm">
+                    <?php if ($likeThisShop != true): ?>
+                        <button type="submit" name="like_this_shop" class="btn btn-success">Like</button>
+                    <?php else: ?>
+                        <button type="submit" name="dislike_this_shop" class="btn btn-warning">Dislike</button>
+                    <?php endif; ?>
+                </div>
+                </form>
+            <?php endif; ?>
         </div>
     </div>
 
