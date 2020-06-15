@@ -35,7 +35,7 @@
 
     $new_CommentID = (int)$maxID['max(Comment_ID)'] + 1;
 
-    $cur_Date = date('Y-m-d');
+    $cur_Date = date("Y-m-d H:i:s");
 
     $commentAddquery = "INSERT INTO Comments_from_Customer 
     VALUES('$new_CommentID', '$new_comment', '$new_rating', '$cur_Date', '$cur_CustomerID', '$cur_Shop_ID')";

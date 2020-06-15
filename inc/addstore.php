@@ -11,7 +11,7 @@
     $regionCode = $hasWifi = $offerDelivery = $goodForGroup = $rating = 0;
     $priceCode = 599;
     $monOpen = $monClose = $tueOpen = $tueClose = $wedOpen = $wedClose = $thurOpen = $thurClose
-        = $friOpen = $friClose = $satOpen = $satClose = $sunOpen = $sunClose = '14:00';
+        = $friOpen = $friClose = $satOpen = $satClose = $sunOpen = $sunClose = '';
 
     if(isset($_SESSION['logged_owner_id'])){
         $owner_id = $_SESSION['logged_owner_id'];
@@ -257,13 +257,15 @@
     <link rel="stylesheet" type="text/css" href="https://bootswatch.com/4/cosmo/bootstrap.min.css">
 </head>
 <body>
-<nav class="navbar navbar-default">
-    <div class="container">
-        <div class="navbar-header">
-            <p class="navbar-brand">Hello <?=$owner_name?> Add Your Store</p>
-        </div>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <p class="navbar-brand">Hello! <?=$owner_name?> </p>
+    <div class="collapse navbar-collapse" >
+        <h2 class="navbar-nav mr-auto">
+            Add Your Store
+        </h2>
     </div>
 </nav>
+
 <div class="container">
     <?php if($msg != ''): ?>
         <div class="alert <?php echo $msgClass; ?>"><?php echo $msg; ?></div>
@@ -373,7 +375,7 @@
         </div>
         <br>
         <button type="submit" name="save_shop" class="btn btn-primary">Save</button>
-        <button type="submit" name="cancel_shop" class="btn btn-primary">Cancel</button>
+        <button type="submit" name="cancel_shop" class="btn btn-primary" formnovalidate>Cancel</button>
     </form>
 </div>
 <?php include('footer.php'); ?>

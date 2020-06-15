@@ -9,7 +9,7 @@
 
         
     $curCustomerName = '';
-    $curCustomerID = $_SESSION['log_in_customer_id'];
+    $curCustomerID = $_SESSION['logged_cust_id'];
 
 
     if(isset($_POST['submit_new_general'])){

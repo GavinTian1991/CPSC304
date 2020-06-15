@@ -6,6 +6,7 @@
     $cur_owner_id = '';
     $cur_owner_name = '';
     $cur_owner_has_store = False;
+    $cur_owner_has_comments = False;
 
     $msg = '';
     $msgClass = '';
@@ -46,13 +47,13 @@
 //        header('Location: ../index.php');
 //        exit;
     }
-    $store_sql = "SELECT Shop_ID, Shop_Name, Address FROM milk_tea_shop WHERE Owner_ID = $cur_owner_id";
+    $store_sql = "SELECT Shop_ID, Shop_Name, Address, Average_Rating AS Rating FROM milk_tea_shop WHERE Owner_ID = $cur_owner_id";
     $result = mysqli_query($conn, $store_sql);
     $stores = mysqli_fetch_all($result,MYSQLI_ASSOC);
     // free the $result from memory (good practise)
     mysqli_free_result($result);
     //print_r($stores);
-    if(!$stores)
+    if(empty($stores))
     {
         $cur_owner_has_store = False;
         $msgClass = 'alert-dismissible alert-primary';
@@ -62,22 +63,37 @@
     {
         $cur_owner_has_store = True;
     }
+
+    $comment_sql = "SELECT m.Shop_Name, c.Comment_ID, c.Contents, c.Rating_Level, c.Date
+                    FROM comments_from_customer c, milk_tea_shop m
+                    WHERE c.Shop_ID = m.Shop_ID AND m.Owner_ID = '$cur_owner_id'";
+    $comment_result = mysqli_query($conn, $comment_sql);
+    $comments = mysqli_fetch_all($comment_result, MYSQLI_ASSOC);
+    if(!empty($comments))
+    {
+        $cur_owner_has_comments = True;
+    }
+
+    if(isset($_POST['edit_owner']))
+    {
+        header("Location: editowner.php");
+    }
     // close connection
-    mysqli_close($conn);
+    //mysqli_close($conn);
 ?>
 
 <!DOCTYPE html>
 <html>
     <?php include('ownavbar.php'); ?>
 <ul class="nav nav-tabs">
-    <li class = "nav-item ">
+    <li class = "nav-item active">
         <a class="nav-link" href="#profile"  >Profile</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link active" href="#stores"  >Stores</a>
+        <a class="nav-link " href="#stores"  >Stores</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link active" href="#comments"  >Comments</a>
+        <a class="nav-link " href="#comments"  >Comments</a>
     </li>
 </ul>
 <div id="myTabContent" class="tab-content">
@@ -103,6 +119,10 @@
                         <td><?=$license?></td>
                     </tr>
                 </table>
+                <br>
+                <form action="editowner.php" method="POST">
+                    <button type="submit" name="edit_owner" class="btn btn-secondary my-2 my-sm-0">Edit</button>
+                </form>
             </div>
         </div>
     </div>
@@ -112,35 +132,23 @@
                 <table class = "table table-hover">
                     <thead>
                         <tr>
-                            <th scope="col">Edit</th>
+<!--                            <th scope="col">Edit</th>-->
                             <th scope="col">Shop Name</th>
                             <th scope="col">Shop Address</th>
+                            <th scope="col">Shop Rating</th>
                             <th scope="col">Details</th>
-                            <th scope="col">Delete</th>
+<!--                            <th scope="col">Delete</th>-->
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach($stores as $store) :?>
                         <tr>
-                            <td>
-                                <form method="post" action="editstore.php">
-                                    <button type="submit" name="editstore" value=<?= $store['Shop_ID'];?> class="btn btn-primary">
-                                    Edit
-                                    </button>
-                                </form>
-                            </td>
                             <td><?= $store['Shop_Name'];?></td>
                             <td><?= $store['Address'];?></td>
+                            <td><?= $store['Rating'];?></td>
                             <td>
-                                <a class="nav-link" href="shopmanage.php?id=<?= $store['Shop_ID']?>">
+                                <a class="nav-link" href="shopmanage.php?id=<?=$store['Shop_ID']?>">
                                 More</a>
-                            </td>
-                            <td>
-                                <form method="post" action="editstore.php">
-                                    <button type="submit" name="editstore" value=<?=$_SERVER['PHP_SELF'];?> class="btn btn-primary">
-                                    X
-                                    </button>
-                                </form>
                             </td>
                         </tr>
                         <?php endforeach; ?>
@@ -152,7 +160,55 @@
         </div>
     </div>
     <div class="tab-pane fade show" id="comments">
-        <p>Comments TODO</p>
+        <div class="container">
+            <?php if($cur_owner_has_comments):?>
+                <table class = "table table-hover">
+                    <thead>
+                    <tr>
+                        <th scope="col">Shop Name</th>
+                        <th scope="col">Comment</th>
+                        <th scope="col">Comment Rating</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach($comments as $comment) :?>
+                        <tr>
+                            <td><?= $comment['Shop_Name'];?></td>
+                            <td><?= $comment['Contents'];?></td>
+                            <td><?= $comment['Rating_Level'];?></td>
+                            <td><?php
+                                $cd = $comment['Date'];
+                                $discdate = date('Y-m-d',strtotime($cd));
+                                echo $discdate;
+                                ?>
+                            </td>
+                            <?php
+                                $target_ID = $comment['Comment_ID'];
+                                $checkReplyquery = "SELECT count(*) AS Count FROM Reply_with_Feedback 
+                                WHERE Account_ID = '$cur_owner_id'AND Replied_Comment_ID = '$target_ID';";
+                                $checkReplyResult = mysqli_query($conn, $checkReplyquery);
+                                $reply = mysqli_fetch_assoc($checkReplyResult);
+                                echo $conn->error;
+                            ?>
+                            <td>
+                                <?php if(!$reply['Count']):?>
+                                <a class="nav-link" href="addfeeback.php?index=0&id=<?=$comment['Comment_ID']?>">
+                                    Reply</a>
+                                <?php else:?>
+                                <a class="nav-link" href="addfeeback.php?index=1&id=<?=$comment['Comment_ID']?>">
+                                    Edit</a>
+                                <?php endif;?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php else: ?>
+                <p>You don't have any comments associated with your business.</p>
+            <?php endif;?>
+        </div>
     </div>
 </div>
 <script>
