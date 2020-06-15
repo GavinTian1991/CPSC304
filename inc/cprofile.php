@@ -8,10 +8,8 @@
     $msgClass = '';
     $commentIndex = 0;
 
-        
     $curCustomerName = '';
     $curCustomerID = $_SESSION['log_in_customer_id'];
-
 
     if(isset($_POST['submit_new_general'])){
       $newName = mysqli_real_escape_string($conn, $_POST['new_name']);
@@ -45,7 +43,6 @@
                 $msgClass = 'alert-danger';
             }
         }
-
       }
     }
 

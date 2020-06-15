@@ -44,10 +44,9 @@
     VALUES('$new_CommentID', '$new_comment', '$new_rating', '$cur_Date', '$cur_CustomerID', '$cur_Shop_ID')";
 
     $commentAddresult = mysqli_query($conn, $commentAddquery);
-    var_dump($commentAddresult);
 
-    if($commentAddresult){
-        $msg = 'Comment added successfully!';
+    if($commentAddresult) {
+        $msg = 'Comment added!';
         $msgClass = 'alert-success';
 
         $ratingquery = "SELECT Rating_Level FROM Comments_from_Customer WHERE Shop_ID = '$cur_Shop_ID'";
@@ -75,7 +74,8 @@
         if(mysqli_query($conn, $ratingsetquery)) {
             header('Location: mtshop.php');
         } else {
-            echo 'none';
+            $msg = 'Average Rating setting failed!';
+            $msgClass = 'alert-danger';
         }
     } else {
         $msg = 'You have already comment this shop!';
@@ -95,6 +95,9 @@
 </head>
 <body>
     <?php require('cnavbar.php'); ?>
+    <?php if($msg != ''): ?>
+    		<div class="alert <?php echo $msgClass; ?>"><?php echo $msg; ?></div>
+    <?php endif; ?>
     <div class="jumbotron">
         <div class="row">
             <div class="col-sm">

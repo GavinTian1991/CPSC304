@@ -6,7 +6,7 @@
     }
 
     $msg = '';
-	$msgClass = 'alert-danger';
+	$msgClass = '';
     
     $mtsquery = 'SELECT Shop_ID, Shop_Name, Address, Zip_Code, Phone_Number, 
             Has_Wifi, Good_For_Group, Price_ID FROM Milk_Tea_Shop';
