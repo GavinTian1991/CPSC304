@@ -4,11 +4,11 @@
     session_start();
   }
 
-  $cur_cust_name = '';
+  $cur_name = '';
   $cur_cust_id = '';
 
   if(isset($_SESSION['customer_logged_in'])) {
-      $cur_cust_name = $_SESSION['logged_cust_name'];
+      $cur_name = $_SESSION['logged_cust_name'];
       $cur_cust_id = $_SESSION['logged_cust_id'];
   }
 

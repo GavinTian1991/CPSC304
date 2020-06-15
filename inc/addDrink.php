@@ -96,30 +96,40 @@
         if(!array_filter($errors)) { //check errors array if empty then no error
             $msg =  'User input valid!';
             $msgClass = 'alert-success';
-            $maxIDquery = "SELECT IFNULL(max(Drink_ID),1400) AS Max_ID FROM drinks";
-            $maxresult = mysqli_query($conn, $maxIDquery);
-            $max = mysqli_fetch_assoc($maxresult);
-            mysqli_free_result($maxresult);
 
-            $newID = (int)$max['Max_ID'] + 1;
-            $istypeofSql = "INSERT INTO drink_is_typeof VALUES('$name','$typeCode')";
-            $istypeofResult = mysqli_query($conn, $istypeofSql);
-            echo ($conn->error);
 
-            $drinkSql = "INSERT INTO drinks VALUES('$newID', '$name','$description','$price','$hotCold','$stype');";
-            $drinkResult = mysqli_query($conn, $drinkSql);
-            echo ($conn->error);
+            $checkDrinkNameSql = "SELECT count(*) AS count FROM drink_is_typeof WHERE Drink_Name = '$name'";
+            $checkDrinkNameResult = mysqli_query($conn,$checkDrinkNameSql);
+            $checkDrinkName = mysqli_fetch_assoc($checkDrinkNameResult);
+           // echo $checkDrinkName['count']."<br>";
+            $istypeofResult = $drinkResult = True;
+            if(!$checkDrinkName['count']){
+                $maxIDquery = "SELECT IFNULL(max(Drink_ID),1400) AS Max_ID FROM drinks";
+                $maxresult = mysqli_query($conn, $maxIDquery);
+                $max = mysqli_fetch_assoc($maxresult);
+                mysqli_free_result($maxresult);
+                $newID = (int)$max['Max_ID'] + 1;
+
+                $istypeofSql = "INSERT INTO drink_is_typeof VALUES('$name','$typeCode')";
+                $istypeofResult = mysqli_query($conn, $istypeofSql);
+                echo ($conn->error);
+
+                $drinkSql = "INSERT INTO drinks VALUES('$newID', '$name','$description','$price','$hotCold','$stype');";
+                $drinkResult = mysqli_query($conn, $drinkSql);
+                echo ($conn->error);
+            }
+            else
+            {
+                $oldIDsql = "SELECT Drink_ID FROM drinks WHERE Drink_Name = '$name'";
+                $oldIDresult = mysqli_query($conn, $oldIDsql);
+                $old = mysqli_fetch_assoc($oldIDresult);
+                $newID = $old['Drink_ID'];
+            }// The name is detected in istype of means this drink exits only add offerby relationship
 
             $offerbySql = "INSERT INTO drink_offered_by VALUES('$newID','$shop_id');";
             $offerbyResult = mysqli_query($conn, $offerbySql);
-            echo ($conn->error);
-
-
-
-            if($drinkResult && $offerbyResult && $istypeofResult){
-                mysqli_free_result($drinkResult);
-                mysqli_free_result($offerbyResult);
-                mysqli_free_result($istypeofResult);
+            echo $conn->error;
+            if($drinkResult && $istypeofResult && $offerbyResult){
                 header('location: shopmanage.php');
             }
             else{

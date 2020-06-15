@@ -98,6 +98,52 @@
         $cur_shop_has_events = True;
     }
 
+    if(isset($_POST['delete_drink']))
+    {
+        $drink_to_delete = mysqli_real_escape_string($conn,$_POST['delete_drink']);
+        //check offer by count
+        $checkOfferSql = "SELECT count(*) AS count FROM drink_offered_by WHERE Drink_ID = '$drink_to_delete'";
+        $checkOfferResult = mysqli_query($conn,$checkOfferSql);
+        $checkOffer = mysqli_fetch_assoc($checkOfferResult);
+        if($checkOffer['count'] > 1){//More than one use this drink, remove offer relation only
+            $deleteOfferSql = "DELETE FROM drink_offered_by 
+            WHERE Drink_ID = '$drink_to_delete'AND Shop_ID = '$curr_shop_id';";
+            $deleteOfferResult = mysqli_query($conn, $deleteOfferSql);
+            if($deleteOfferResult){
+                $msg = "Delete drink information success!";
+                $msgClass = 'alert-success';
+                header("location: shopmanage.php");
+            }
+            else{
+                $msg = 'Delete drink information failed!';
+                $msgclass = 'alert-danger';
+            }
+        }
+        else //Only one store uses this drink, delete drink and delete offer by cascade
+        {
+            $getDrinkNameSql = "SELECT Drink_Name FROM Drinks WHERE Drink_ID = '$drink_to_delete'";
+            $getDrinkNameResult = mysqli_query($conn, $getDrinkNameSql);
+            $getDrinkName = mysqli_fetch_assoc($getDrinkNameResult);
+            $drinkNameDelete = $getDrinkName['Drink_Name'];
+            //Remove drink first
+            $deleteDrinkSql = "DELETE FROM drinks WHERE Drink_ID = '$drink_to_delete';";
+            $deleteDrinkResult = mysqli_query($conn, $deleteDrinkSql);
+            //Delete drink name is type after
+            $deleteTypeofSql = "DELETE FROM drink_is_typeof WHERE Drink_Name = '$drinkNameDelete'";
+            $deleteTypeofResult = mysqli_query($conn, $deleteTypeofSql);
+            if($deleteDrinkResult && $deleteTypeofResult)
+            {
+                $msg = "Delete drink information success!";
+                $msgClass = 'alert-success';
+                header("location: shopmanage.php");
+            }
+            else{
+                $msg = 'Delete drink information failed!';
+                $msgclass = 'alert-danger';
+            }
+        }
+    }
+
     if(isset($_POST['shop_quit']))
     {
         unset($_SESSION['current_shop_id']);
