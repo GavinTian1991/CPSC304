@@ -6,7 +6,13 @@
         <legend>Drink Information</legend>
         <div class="form-group">
             <label>Drink Name</label>
-            <input type="text" name="drink_name" class="form-control" value="<?=htmlspecialchars($name);?>" required>
+            <input type="text" name="drink_name" class="form-control" value="<?=htmlspecialchars($name);?>" required
+                <?php
+                if(isset($_SESSION['current_drink_id']))
+                {
+                    echo " disabled=\"\"";
+                }
+                ?>>
             <div class="text-danger"><?=$errors['name'];?></div>
         </div>
         <div class="form-group">

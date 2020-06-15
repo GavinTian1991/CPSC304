@@ -66,7 +66,8 @@
 
     $comment_sql = "SELECT m.Shop_Name, c.Comment_ID, c.Contents, c.Rating_Level, c.Date
                     FROM comments_from_customer c, milk_tea_shop m
-                    WHERE c.Shop_ID = m.Shop_ID AND m.Owner_ID = '$cur_owner_id'";
+                    WHERE c.Shop_ID = m.Shop_ID AND m.Owner_ID = '$cur_owner_id'
+                    ORDER BY c.date DESC";
     $comment_result = mysqli_query($conn, $comment_sql);
     $comments = mysqli_fetch_all($comment_result, MYSQLI_ASSOC);
     if(!empty($comments))
@@ -132,12 +133,10 @@
                 <table class = "table table-hover">
                     <thead>
                         <tr>
-<!--                            <th scope="col">Edit</th>-->
                             <th scope="col">Shop Name</th>
                             <th scope="col">Shop Address</th>
                             <th scope="col">Shop Rating</th>
                             <th scope="col">Details</th>
-<!--                            <th scope="col">Delete</th>-->
                         </tr>
                     </thead>
                     <tbody>

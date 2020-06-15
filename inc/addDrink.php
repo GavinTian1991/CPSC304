@@ -91,13 +91,12 @@
         {
             $typeCode = $_POST["drink_type"];
             settype($typeCode,"integer");
-            echo $typeCode;
         }
 
         if(!array_filter($errors)) { //check errors array if empty then no error
             $msg =  'User input valid!';
             $msgClass = 'alert-success';
-            $maxIDquery = "SELECT max(Drink_ID) AS Max_ID FROM drinks";
+            $maxIDquery = "SELECT IFNULL(max(Drink_ID),1400) AS Max_ID FROM drinks";
             $maxresult = mysqli_query($conn, $maxIDquery);
             $max = mysqli_fetch_assoc($maxresult);
             mysqli_free_result($maxresult);
@@ -139,7 +138,6 @@
     {
         header('Location: shopmanage.php');
     }
-
 ?>
 <!DOCTYPE html>
 <html>

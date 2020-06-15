@@ -293,7 +293,6 @@
                         <th scope="col">Edit</th>
                         <th scope="col">Event Name</th>
                         <th scope="col">Event Content</th>
-                        <th scope="col">Delete</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -305,13 +304,6 @@
                             </td>
                             <td><?=$event['Event_name'];?></td>
                             <td><?=$event['Event_Content'];?></td>
-                            <td>
-                                <form method="post" action="<?=$_SERVER['PHP_SELF'];?>">
-                                    <button type="submit" name="delete_event" value="<?=$event['Event_name']?>" class="btn btn-primary">
-                                        X
-                                    </button>
-                                </form>
-                            </td>
                         </tr>
                     <?php endforeach; ?>
                     </tbody>
