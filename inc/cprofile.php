@@ -36,6 +36,7 @@
             $customerBirthdayResult = mysqli_query($conn, $customerBirthdayQuery);
 
             if($accountGeneralResult && $customerBirthdayResult){
+                $_SESSION['log_in_customer'] = $newName;
                 $msg = 'Update successfully!';
                 $msgClass = 'alert-success';
             } else {

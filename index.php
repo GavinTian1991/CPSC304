@@ -14,7 +14,6 @@
 		header('Location: inc/register.php');
 	} 
 
-
 	if(isset($_POST['browser'])) {
 		$_SESSION['log_in_customer'] = 'anonymous';
 		header('Location: inc/customer.php');
