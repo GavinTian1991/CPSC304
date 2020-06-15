@@ -5,18 +5,39 @@
     session_start();
   }
 
+  if(isset($_SESSION['log_in_customer'])) {
+    $cur_name = $_SESSION['log_in_customer'];
+  }
+
+  $msg = '';
+  $msgClass = '';
+
   $cur_Shop_ID = '';
   $cur_Customer_Name = '';
+  $cur_CustomerID = '';
+  $likeThisShop = false;
 
   if(isset($_SESSION['cur_mts_ID'])) {
     $cur_Shop_ID = (int)$_SESSION['cur_mts_ID'];
     $cur_Customer_Name = $_SESSION['logged_cust_name'];
 
-    $customerIDquery = "SELECT Account_ID FROM Account WHERE User_Name = '$cur_Customer_Name'";
-    $customerIDResult = mysqli_query($conn, $customerIDquery);
-    $customerID = mysqli_fetch_assoc($customerIDResult);
+    if($cur_name != 'anonymous') {
+        $customerIDquery = "SELECT Account_ID FROM Account WHERE User_Name = '$cur_Customer_Name'";
+        $customerIDResult = mysqli_query($conn, $customerIDquery);
+        $customerID = mysqli_fetch_assoc($customerIDResult);
+    
+        $cur_CustomerID = (int)$customerID['Account_ID'];
 
-    $cur_CustomerID = (int)$customerID['Account_ID'];
+        $customerLikeShopQuery = "SELECT * FROM Favored_by WHERE Shop_ID = '$cur_Shop_ID' 
+        AND Customer_Account_ID = '$cur_CustomerID'";
+
+        $customerLikeShopResult = mysqli_query($conn, $customerLikeShopQuery);
+        $customerLikeShopPost = mysqli_fetch_assoc($customerLikeShopResult);
+        if($customerLikeShopPost) {
+            $likeThisShop = true;
+        } 
+    }
+
 
     $query = "SELECT Shop_Name FROM Milk_Tea_Shop WHERE Shop_ID = '$cur_Shop_ID'";
     $result = mysqli_query($conn, $query);
@@ -41,9 +62,10 @@
     VALUES('$new_CommentID', '$new_comment', '$new_rating', '$cur_Date', '$cur_CustomerID', '$cur_Shop_ID')";
 
     $commentAddresult = mysqli_query($conn, $commentAddquery);
-    var_dump($commentAddresult);
 
-    if($commentAddresult){
+    if($commentAddresult) {
+        $msg = 'Comment added!';
+        $msgClass = 'alert-success';
 
         $ratingquery = "SELECT Rating_Level FROM Comments_from_Customer WHERE Shop_ID = '$cur_Shop_ID'";
         $ratingresult = mysqli_query($conn, $ratingquery);
@@ -70,13 +92,46 @@
         if(mysqli_query($conn, $ratingsetquery)) {
             header('Location: mtshop.php');
         } else {
-            echo 'none';
+            $msg = 'Average Rating setting failed!';
+            $msgClass = 'alert-danger';
         }
     } else {
-        echo 'ERROR: '. mysqli_error($conn);
-        echo 'Added failed!';
+        $msg = 'You have already comment this shop!';
+        $msgClass = 'alert-danger';
     }
   }
+
+
+  if(isset($_POST['like_this_shop'])){
+    $shopLikeQuery = "INSERT INTO Favored_by 
+    VALUES('$cur_Shop_ID', '$cur_CustomerID')";
+    $shopLikeResult = mysqli_query($conn, $shopLikeQuery);
+    if($shopLikeResult) {
+        $likeThisShop = true;
+        $msg = 'You like this shop!';
+        $msgClass = 'alert-success';
+    } else {
+        $msg = 'Like this shop failed!';
+        $msgClass = 'alert-danger';
+    }
+  }
+
+  if(isset($_POST['dislike_this_shop'])){
+
+    $disLikeShopQuery = "DELETE FROM Favored_by 
+    WHERE Shop_ID = '$cur_Shop_ID' AND Customer_Account_ID = '$cur_CustomerID'";
+
+    $disLikeShopResult = mysqli_query($conn, $disLikeShopQuery);
+    if($disLikeShopResult) {
+        $likeThisShop = false;
+        $msg = 'You dislike this shop!';
+        $msgClass = 'alert-success';
+    } else {
+        $msg = 'Dislike this shop failed!';
+        $msgClass = 'alert-danger';
+    }
+  }
+  
 
 ?>
 
@@ -90,6 +145,9 @@
 </head>
 <body>
     <?php require('cnavbar.php'); ?>
+    <?php if($msg != ''): ?>
+    		<div class="alert <?php echo $msgClass; ?>"><?php echo $msg; ?></div>
+    <?php endif; ?>
     <div class="jumbotron">
         <div class="row">
             <div class="col-sm">
@@ -143,6 +201,17 @@
                     ?>
                 </p>
             </div>
+            <?php if ($cur_name != 'anonymous'): ?>
+                <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+                <div class="col-sm">
+                    <?php if ($likeThisShop != true): ?>
+                        <button type="submit" name="like_this_shop" class="btn btn-success">Like</button>
+                    <?php else: ?>
+                        <button type="submit" name="dislike_this_shop" class="btn btn-warning">Dislike</button>
+                    <?php endif; ?>
+                </div>
+                </form>
+            <?php endif; ?>
         </div>
     </div>
 
@@ -156,13 +225,13 @@
                         $dresult = mysqli_query($conn, $dquery);
                         $drinks = mysqli_fetch_all($dresult, MYSQLI_ASSOC);
                     ?>
-                    <div class="row">
                         <?php foreach($drinks as $drink) : ?>
+                            <div class="row">
                             <div class="col-sm">
                                 <p class="text-primary"><?php echo $drink['Drink_Name']?></p>
                             </div>
                             <div class="col-sm">
-                                <p class="text-secondary">Des: 
+                                <p class="text-secondary">
                                     <?php 
                                         if($drink['Description'] != ""){
                                             echo $drink['Description'];
@@ -185,12 +254,13 @@
                                 }
                                 ?></p>
                             </div>
+                        </div>
                         <?php endforeach; ?>
-                    </div>
+                    
                 </div>
             </div>
 
-
+            <?php if ($cur_name != 'anonymous'): ?>
             <div class="card border-primary mb-3">
                 <div class="card-header">Comments</div>
                 <div class="card-body">
@@ -263,7 +333,7 @@
                     </form>
                 </div>
             </div>
-
+            <?php endif; ?>
     <?php include('footer.php'); ?>
 </body>
 </html>

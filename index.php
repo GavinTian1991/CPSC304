@@ -2,12 +2,22 @@
 
 	require('inc/config/db.php');
 
+	if(session_status() !== PHP_SESSION_ACTIVE){
+        session_start();
+    }
+
 	if(isset($_POST['sign'])) {
 		header('Location: inc/login.php');
 	}
 
 	if(isset($_POST['register'])) {
 		header('Location: inc/accounttype.php');
+	} 
+
+
+	if(isset($_POST['browser'])) {
+		$_SESSION['log_in_customer'] = 'anonymous';
+		header('Location: inc/customer.php');
 	} 
 	
 	// Close Connection

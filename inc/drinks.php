@@ -30,13 +30,13 @@
                         $dresult = mysqli_query($conn, $dquery);
                         $drinks = mysqli_fetch_all($dresult, MYSQLI_ASSOC);
                     ?>
-                    <div class="row">
                         <?php foreach($drinks as $drink) : ?>
+                            <div class="row">
                             <div class="col-sm">
                                 <p class="text-primary"><?php echo $drink['Drink_Name']?></p>
                             </div>
                             <div class="col-sm">
-                                <p class="text-secondary">Des: 
+                                <p class="text-secondary">
                                     <?php 
                                         if($drink['Description'] != ""){
                                             echo $drink['Description'];
@@ -59,8 +59,8 @@
                                 }
                                 ?></p>
                             </div>
+                        </div>
                         <?php endforeach; ?>
-                    </div>
                 </div>
             </div>
         <?php endforeach; ?>
