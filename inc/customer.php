@@ -82,6 +82,18 @@
         }
     } 
 
+    if(isset($_POST['search'])){
+        $shopSearchKeyWord = mysqli_real_escape_string($conn, $_POST['shop_name_search']);
+
+        $shopNameSearchQuery = "SELECT mts.Shop_ID, mts.Shop_Name, mts.Address, mts.Zip_Code, mts.Phone_Number, 
+        mts.Has_Wifi, mts.Good_For_Group, mts.Price_ID 
+        FROM Milk_Tea_Shop mts
+        WHERE mts.Shop_Name LIKE '%$shopSearchKeyWord%'";
+
+        $result = mysqli_query($conn, $shopNameSearchQuery);
+        $mtsposts = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    }
+
     if(isset($_POST['gotoMTS'])){
         session_start();
         $shop_ID = $_POST['gotoMTS'];
@@ -97,6 +109,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customer</title>
     <link rel="stylesheet" type="text/css" href="https://bootswatch.com/4/cosmo/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
 </head>
 <body>
     <?php require('cnavbar.php'); ?>
@@ -228,6 +243,24 @@
                 </div>
             </div>
         </div>
+        </form>
+        <br>
+        <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm">
+                        <input id="shop_name_search_input" type="text" name="shop_name_search" class="form-control" value="Please input shop name" required>
+                    </div>
+                    <div class="col-sm">
+                        <button id="shop_name_search_but" type="submit" name="search" class="btn btn-primary" disabled="true">Search</button>
+                        <script type="text/javascript">
+                            $("#shop_name_search_input").bind("change paste keyup", function() {
+                            $("#shop_name_search_but").attr("disabled", false);
+                            });
+                        </script>
+                    </div>
+                </div>
+            </div>
         </form>
 	</div>
     <?php include('footer.php'); ?>
