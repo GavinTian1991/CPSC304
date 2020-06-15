@@ -17,6 +17,7 @@
         $region = $_POST['location'];
         $pricelevel = $_POST['pricelevel'];
         $ratinglevel = $_POST['ratinglevel'];
+        $drinkType = $_POST['drinkType'];
 
         $regionquery = "SELECT mts.Shop_ID, mts.Shop_Name, mts.Address, mts.Zip_Code, mts.Phone_Number, 
         mts.Has_Wifi, mts.Good_For_Group, mts.Price_ID 
@@ -33,24 +34,46 @@
         FROM Milk_Tea_Shop mts 
         WHERE mts.Average_Rating >= '$ratinglevel'";
 
-        $filterquery = "";
+        $drinkTypeQuery = "SELECT mts.Shop_ID, mts.Shop_Name, mts.Address, mts.Zip_Code, mts.Phone_Number, 
+        mts.Has_Wifi, mts.Good_For_Group, mts.Price_ID 
+        FROM Milk_Tea_Shop mts WHERE mts.Shop_ID IN
+        (SELECT DISTINCT mts.Shop_ID
+        FROM Milk_Tea_Shop mts, Drink_Offered_By dob, Drinks d, Drink_Is_Typeof dit, Shared_Drink_Types sdt
+        WHERE mts.Shop_ID = dob.Shop_ID AND 
+        dob.Drink_ID = d.Drink_ID AND d.Drink_Name = dit.Drink_Name AND dit.Shared_Type_ID = '$drinkType')";
 
-        if($region != 'none' && $pricelevel != 'none' && $ratinglevel != 'none') {
-            $filterquery = $regionquery . " INTERSECT " . $pricequery . " INTERSECT " . $ratinglevelquery;
-        } else if($region != 'none' && $pricelevel != 'none') {
-            $filterquery = $regionquery . " INTERSECT " . $pricequery;
-        } else if($region != 'none' && $ratinglevel != 'none') {
-            $filterquery = $regionquery . " INTERSECT " . $ratinglevelquery;
-        } else if($pricelevel != 'none' && $ratinglevel != 'none') {
-            $filterquery = $pricequery . " INTERSECT " . $ratinglevelquery;
-        }else if($region != 'none') {
+        $firstQuery = false;
+        $filterquery = "";
+        if($region != 'none' && $firstQuery == false) {
             $filterquery = $regionquery;
-        }else if($pricelevel != 'none') {
-            $filterquery = $pricequery;
-        }else if($ratinglevel != 'none') {
-            $filterquery = $ratinglevelquery;
-        }else {
-            $msg = 'No filter option selected!';
+            $firstQuery = true;
+        }
+
+        if($pricelevel != 'none') {
+            if($firstQuery == true) {
+                $filterquery = $filterquery . " INTERSECT " . $pricequery;
+            } else {
+                $filterquery = $pricequery;
+                $firstQuery = true;
+            }
+        }
+
+        if($ratinglevel != 'none') {
+            if($firstQuery == true) {
+                $filterquery = $filterquery . " INTERSECT " . $ratinglevelquery;
+            } else {
+                $filterquery = $ratinglevelquery;
+                $firstQuery = true;
+            }
+        }
+
+        if($drinkType != 'none') {
+            if($firstQuery == true) {
+                $filterquery = $filterquery . " INTERSECT " . $drinkTypeQuery;
+            } else {
+                $filterquery = $drinkTypeQuery;
+                $firstQuery = true;
+            }
         }
 
         if($filterquery != "") {
@@ -185,6 +208,19 @@
                         <option value="3">3</option>
                         <option value="4">4</option>
                         <option value="5">5</option>
+                    </select>
+                </div>
+                <div class="col-sm">
+                    <select name="drinkType" class="custom-select">
+                        <option selected="" value="none">Drink Type</option>
+                        <option value="1301">Milk Tea</option>
+                        <option value="1302">Fruit Tea</option>
+                        <option value="1303">Fresh Milk</option>
+                        <option value="1304">Fresh Tea</option>
+                        <option value="1305">Slush</option>
+                        <option value="1306">Cream Cap Tea</option>
+                        <option value="1307">Coffee</option>
+                        <option value="1308">Dessert</option>
                     </select>
                 </div>
                 <div class="col-sm">

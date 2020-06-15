@@ -380,7 +380,7 @@
                         <button type="submit" name="submit_new_comment" value="<?php echo $commentIndex?>" class="btn btn-primary">Submit</button>
                       </div>
                       <div class="col-sm">
-                        <button type="submit" name="delete_comment" value="<?php echo $commentIndex++?>" class="btn btn-warning">Delete</button>
+                        <button type="submit" name="delete_comment" value="<?php echo $commentIndex++?>" class="btn btn-warning" formnovalidate>Delete</button>
                       </div>
                   </div>
                 <?php endforeach; ?>
