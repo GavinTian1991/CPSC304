@@ -190,15 +190,16 @@
             <div class="col-sm">
                 <p>Sales Event:
                     <?php
-                        $salequery = "SELECT Event_Content From Holds_Sales_Event WHERE Shop_ID = '$cur_Shop_ID'";
+                        $salequery = "SELECT Event_name, Event_Content From Holds_Sales_Event WHERE Shop_ID = '$cur_Shop_ID'";
                         $saleresult = mysqli_query($conn, $salequery);
-                        $saleevent = mysqli_fetch_assoc($saleresult);
-                        if(isset($saleevent['Event_Content'])) {
-                            echo $saleevent['Event_Content'];
-                        } else {
-                            echo 'None';
-                        }
+                        $saleevents = mysqli_fetch_all($saleresult, MYSQLI_ASSOC);
                     ?>
+                    <?php foreach($saleevents as $saleevent) : ?>
+                        <p><?php echo $saleevent['Event_name']?> : <?php echo $saleevent['Event_Content']?></p>
+                    <?php endforeach; ?>
+                    <?php if (empty($saleevents)): ?>
+                            <p>None</p>
+                    <?php endif; ?>
                 </p>
             </div>
             <?php if ($cur_name != 'anonymous'): ?>

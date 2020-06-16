@@ -31,9 +31,7 @@
 				header('Location: customer.php');
 			} else {
 				$msg = 'log failed!';
-				//echo 'ERROR: '. mysqli_error($conn);
 			}
-
 		} else {
 			// Failed
 			$msg = 'Please fill both the username and password fields!';

@@ -5,6 +5,10 @@
         session_start();
     }
 
+    if(isset($_SESSION['log_in_customer'])) {
+        $cur_name = $_SESSION['log_in_customer'];
+      }
+
     $msg = '';
 	$msgClass = '';
     
@@ -102,6 +106,17 @@
 
         $favoredByAllSearchResult = mysqli_query($conn, $favoredByAllSearchQuery);
         $favoredByAllSearchPosts = mysqli_fetch_all($favoredByAllSearchResult, MYSQLI_ASSOC);
+    }
+
+    if(isset($_POST['change_noti_read'])){
+        if(isset($_SESSION['log_in_customer_id'])) {
+            $curCustomerID = $_SESSION['log_in_customer_id'];
+            $notificationReadQuery = "UPDATE Notification n, Sends_To_Account sta
+            SET sta.If_On_Read = 1
+            WHERE n.Notification_ID = sta.Notification_ID AND sta.Account_ID = '$curCustomerID'";
+
+            $notificationReadResult = mysqli_query($conn, $notificationReadQuery);
+        }
     }
 
 
@@ -280,22 +295,79 @@
                 <div class="row">
                     <div class="col-sm">
                         <button type="submit" name="favored_by_all_search" class="btn btn-primary">Which shop(s) favored by all customers?</button>
-                    </div>
-                    <div class="col-sm">
                         <?php if (empty($favoredByAllSearchPosts)): ?>
                             <p>No shop favored by all customers</p>
                         <?php else: ?>
                         <?php foreach($favoredByAllSearchPosts as $favoredByShop) : ?>
                             <div class="row">
                                 <div class="col-sm">
-                                    <p><?php echo $favoredByShop['Shop_Name']?></p>
-                                </div>
-                                <div class="col-sm">
-                                    <p><?php echo $favoredByShop['Zip_Code']?></p>
+                                    <p><?php echo $favoredByShop['Shop_Name']?>   <?php echo $favoredByShop['Zip_Code']?></p>
                                 </div>
                             </div>
                         <?php endforeach; ?>    
                         <?php endif; ?>
+                    </div>
+                    <div class="col-sm">
+                        <?php if ($cur_name != 'anonymous'): ?>
+                            <button id="general_button" type="button" class="btn btn-primary" data-toggle="modal" data-target="#notification_display">
+                                Notification
+                            </button>
+                        <?php endif; ?>
+
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="notification_display" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Notification</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <?php
+                            if(isset($_SESSION['log_in_customer_id'])) {
+                                $curCustomerID = $_SESSION['log_in_customer_id'];
+                                $notificationQuery = "SELECT n.Type, n.Contents, sta.If_On_Read, sta.Send_Date FROM Notification n, Sends_To_Account sta 
+                                WHERE n.Notification_ID = sta.Notification_ID AND sta.Account_ID = '$curCustomerID'";
+                                $notificationResult = mysqli_query($conn, $notificationQuery);
+                                $notificationPosts = mysqli_fetch_all($notificationResult, MYSQLI_ASSOC);
+                            }
+                            ?>
+                            <?php if (empty($notificationPosts)): ?>
+                                <p>No Notifications</p>
+                            <?php else: ?>
+                                <?php foreach($notificationPosts as $notification) : ?>
+                                    <?php if ($notification['If_On_Read'] == 1): ?>
+                                        <p class="text-muted">
+                                    <?php else: ?>
+                                        <p>
+                                    <?php endif; ?>
+                                    <?php echo $notification['Type']?></p>
+                                    <?php if ($notification['If_On_Read'] == 1): ?>
+                                        <p class="text-muted">
+                                    <?php else: ?>
+                                        <p>
+                                    <?php endif; ?>
+                                    <?php echo $notification['Contents']?>
+                                    <?php 
+                                    $cd = $notification['Send_Date'];
+                                    $discdate = date('Y-m-d',strtotime($cd));
+                                    echo $discdate?>
+                                    </p> 
+                                <?php endforeach; ?>    
+                            <?php endif; ?>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" name="change_noti_read" class="btn btn-secondary">Close</button>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                    <!-- Modal -->
+                    
+                    
                     </div>
                 </div>
             </div>
