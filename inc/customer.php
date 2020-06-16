@@ -5,6 +5,10 @@
         session_start();
     }
 
+    if(isset($_SESSION['log_in_customer'])) {
+        $cur_name = $_SESSION['log_in_customer'];
+      }
+
     $msg = '';
 	$msgClass = '';
     
@@ -304,9 +308,11 @@
                         <?php endif; ?>
                     </div>
                     <div class="col-sm">
-                        <button id="general_button" type="button" class="btn btn-primary" data-toggle="modal" data-target="#notification_display">
-                            Notification
-                        </button>
+                        <?php if ($cur_name != 'anonymous'): ?>
+                            <button id="general_button" type="button" class="btn btn-primary" data-toggle="modal" data-target="#notification_display">
+                                Notification
+                            </button>
+                        <?php endif; ?>
 
 
                     <!-- Modal -->
