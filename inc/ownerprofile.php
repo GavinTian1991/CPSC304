@@ -74,13 +74,68 @@
     {
         $cur_owner_has_comments = True;
     }
+    $highestStores = [[]];
+    if(isset($_POST['search_comment'])){
+        $projectionSql = "SELECT";
+        if(isset($_POST['shop_name']))
+        {
+            $is_shop = $_POST['shop_name'];
+            if($is_shop)
+            {
+                $projectionSql = $projectionSql." m.Shop_Name,";
+            }
+        }
+        if(isset($_POST['shop_address']))
+        {
+            $is_address = $_POST['shop_address'];
+            if($is_address)
+            {
+                $projectionSql = $projectionSql."  m.Address,";
+            }
+        }
 
+        if(isset($_POST['shop_zipcode']))
+        {
+            $is_zipcode = $_POST['shop_zipcode'];
+            if($is_zipcode)
+            {
+                $projectionSql = $projectionSql." m.Zip_Code,";
+            }
+        }
+        if(isset($_POST['shop_phone']))
+        {
+            $is_phone= $_POST['shop_phone'];
+            if($is_phone)
+            {
+                $projectionSql = $projectionSql." m.Phone_Number,";
+            }
+        }
+        $projectionSql = $projectionSql." m.Average_Rating FROM milk_tea_shop m 
+        WHERE m.Owner_ID = '$cur_owner_id' AND m.Average_Rating = 
+        (SELECT max(m1.Average_Rating) FROM milk_tea_shop m1 WHERE m1.Owner_ID = m.Owner_ID);";
+        //echo $projectionSql;
+        $projectionResult = mysqli_query($conn, $projectionSql);
+        $highestStores = mysqli_fetch_all($projectionResult, MYSQLI_ASSOC);
+        echo $conn->error;
+    }
+    $badRatings = [];
+    if(isset($_POST['search_rating']))
+    {
+        $badRatingSql = "SELECT m.Shop_Name, min(cc.Rating_Level) as minRate
+        FROM comments_from_customer cc, milk_tea_shop m
+        WHERE cc.Shop_ID = m.Shop_ID AND cc.Shop_ID IN(
+            SELECT m2.Shop_ID
+            FROM milk_tea_shop m2
+            WHERE m2.Owner_ID = '$cur_owner_id'
+        )
+        GROUP BY cc.Shop_ID, m.Shop_Name;";
+        $badRatingResult = mysqli_query($conn, $badRatingSql);
+        $badRatings = mysqli_fetch_all($badRatingResult, MYSQLI_ASSOC);
+    }
     if(isset($_POST['edit_owner']))
     {
         header("Location: editowner.php");
     }
-    // close connection
-    //mysqli_close($conn);
 ?>
 
 <!DOCTYPE html>
@@ -217,6 +272,97 @@
         });
     });
 </script>
+<div class="container">
+    <div class="row">
+        <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+            <legend>Find your highest rated store(s)</legend>
+            <label>Pick the attributes you want to view</label>
+            <div class="col-sm">
+            <div class="form-group">
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" type="checkbox" name="shop_name" value="1" checked>
+                        Shop Name
+                    </label>
+                </div>
+            </div>
+            </div>
+            <div class="col-sm">
+                <div class="form-group">
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input class="form-check-input" type="checkbox" name="shop_address" value="1">
+                            Shop Address
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm">
+                <div class="form-group">
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input class="form-check-input" type="checkbox" name="shop_zipcode" value="1">
+                            Zip Code
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm">
+                <div class="form-group">
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input class="form-check-input" type="checkbox" name="shop_phone" value="1">
+                            Phone Number
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm">
+                <button type="submit" name="search_comment" class="btn btn-primary">Search</button>
+            </div>
+        </form>
+    </div>
+    <div class="row">
+        <div class="container">
+            <?php foreach($highestStores AS $highestStore):?>
+            <div class="row">
+                <?php foreach($highestStore AS $itemkey => $itemvalue):?>
+                <div class="col-sm">
+                    <P><?=$itemkey?> : <?=$itemvalue?></P>
+                </div>
+                <?php endforeach;?>
+            </div>
+            <?php endforeach;?>
+        </div>
+    </div>
+    <br><br>
+    <div class="row">
+        <div class="col-sm">
+            <table class = "table table-hover">
+                <thead>
+                <tr>
+                    <th scope="col">Shop Name</th>
+                    <th scope="col">Min Rating</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach($badRatings AS $badRating):?>
+                    <tr>
+                        <td><?=$badRating['Shop_Name']?></td>
+                        <td><?=$badRating['minRate']?></td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-sm">
+            <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+                <legend>Find the lowest rating for each of your stores</legend>
+                <button type="submit" name="search_rating" class="btn btn-primary">Search</button>
+            </form>
+        </div>
+    </div>
+</div>
 <?php include('footer.php'); ?>
 </body>
 </html>

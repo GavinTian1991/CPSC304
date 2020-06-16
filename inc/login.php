@@ -21,7 +21,7 @@
 
 			$result = mysqli_query($conn, $query);
 			$user = mysqli_fetch_assoc($result);
-			print_r($user);
+			//print_r($user);
 
 			if($user){
 				$_SESSION['log_in_customer'] = $user['User_Name'];
