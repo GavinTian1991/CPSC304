@@ -20,7 +20,7 @@
         settype($index, 'integer');
         $error = '';
         if($index){
-            echo "edit comment";
+            //echo "edit comment";
             $getFeedbackSql = "SELECT Comment_ID, Contents FROM Reply_with_Feedback 
                                 WHERE Account_ID = '$cur_owner_id'AND Replied_Comment_ID = '$target_comment_id';";
             $getFeedbackResult = mysqli_query($conn, $getFeedbackSql);
@@ -30,7 +30,7 @@
         }
         else
         {
-            echo "add comment";
+            //echo "add comment";
             $replyContent = '';
         }
 
@@ -62,7 +62,7 @@
                     }
                 }
                 else{
-                    $maxIDSql = "SELECT max(Comment_ID) as maxID FROM reply_with_feedback;";
+                    $maxIDSql = "SELECT IFNULL(max(Comment_ID),800) as maxID FROM reply_with_feedback;";
                     $maxIDResult = mysqli_query($conn, $maxIDSql);
                     $maxID = mysqli_fetch_assoc($maxIDResult);
                     $newID = (int)$maxID['maxID'] + 1;
@@ -73,7 +73,7 @@
                     {
                         $msg = 'Insertion successfully!';
                         $msgClass = 'alert-success';
-                        //header("Location: ownerprofile.php");
+                        header("Location: ownerprofile.php");
                     }else
                     {
                         $msg = 'Insertion failed!';

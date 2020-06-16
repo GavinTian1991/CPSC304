@@ -50,11 +50,11 @@
     $new_comment = mysqli_real_escape_string($conn, $_POST['newcomment']); 
     $new_rating = mysqli_real_escape_string($conn, $_POST['newrating']);
 
-    $maxcommentIDquery = "SELECT max(Comment_ID) FROM Comments_from_Customer";
+    $maxcommentIDquery = "SELECT IFNULL(max(Comment_ID),700) AS MaxID FROM Comments_from_Customer";
     $maxCommentIDResult = mysqli_query($conn, $maxcommentIDquery);
     $maxID = mysqli_fetch_assoc($maxCommentIDResult);
 
-    $new_CommentID = (int)$maxID['max(Comment_ID)'] + 1;
+    $new_CommentID = (int)$maxID['MaxID'] + 1;
 
     $cur_Date = date("Y-m-d H:i:s");
 

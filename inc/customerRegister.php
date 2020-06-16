@@ -63,12 +63,12 @@
         }
 
         if(!array_filter($errors)){
-            $maxIDquery = "SELECT max(Account_ID) FROM Account";
+            $maxIDquery = "SELECT IFNULL(max(Account_ID),100) AS MaxID FROM Account";
 
             $maxResult = mysqli_query($conn, $maxIDquery);
             $post = mysqli_fetch_assoc($maxResult);
 
-            $newID = (int)$post['max(Account_ID)'] + 1;
+            $newID = (int)$post['MaxID'] + 1;
 
             $array = explode("/",$birthday);
             $newBirthday = $array[2] . '-' . $array[0] . '-' . $array[1];
