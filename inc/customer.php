@@ -112,7 +112,7 @@
         if(isset($_SESSION['log_in_customer_id'])) {
             $curCustomerID = $_SESSION['log_in_customer_id'];
             $notificationReadQuery = "UPDATE Notification n, Sends_To_Account sta
-            SET n.If_On_Read = 1
+            SET sta.If_On_Read = 1
             WHERE n.Notification_ID = sta.Notification_ID AND sta.Account_ID = '$curCustomerID'";
 
             $notificationReadResult = mysqli_query($conn, $notificationReadQuery);
@@ -329,7 +329,7 @@
                             <?php
                             if(isset($_SESSION['log_in_customer_id'])) {
                                 $curCustomerID = $_SESSION['log_in_customer_id'];
-                                $notificationQuery = "SELECT n.Type, n.Contents, n.If_On_Read, sta.Send_Date FROM Notification n, Sends_To_Account sta 
+                                $notificationQuery = "SELECT n.Type, n.Contents, sta.If_On_Read, sta.Send_Date FROM Notification n, Sends_To_Account sta 
                                 WHERE n.Notification_ID = sta.Notification_ID AND sta.Account_ID = '$curCustomerID'";
                                 $notificationResult = mysqli_query($conn, $notificationQuery);
                                 $notificationPosts = mysqli_fetch_all($notificationResult, MYSQLI_ASSOC);
