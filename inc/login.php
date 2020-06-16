@@ -2,7 +2,7 @@
     require('config/db.php');
 
 	$msg = '';
-	$msgClass = 'alert-danger';
+	$msgClass = '';
     
 	if(isset($_POST['submit_Customer'])){
 
@@ -27,14 +27,13 @@
 				$curCustomerID = $user['Account_ID'];
 				$_SESSION['log_in_customer'] = $name;
 				$_SESSION['log_in_customer_id'] = $curCustomerID;
-				echo 'log in successfully!';
 				header('Location: customer.php');
 			} else {
 				$msg = 'log failed!';
-				//echo 'ERROR: '. mysqli_error($conn);
 			}
 		} else {
 			$msg = 'Please fill in all fields';
+			$msgClass = 'alert-danger';
 		}
 	}
 
