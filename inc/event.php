@@ -89,10 +89,36 @@
                 VALUES('$shop_id', '$event_name','$event_content')";
                 $newEventResult = mysqli_query($conn,$newEventSql);
                 if($newEventResult)
-                {
+                {    //Only need to send message when the store is favored by any customer
+                    $findAccountSql = "SELECT Customer_Account_ID FROM favored_by WHERE Shop_ID = '$shop_id'";
+                    $findAccountResult = mysqli_query($conn, $findAccountSql);
+                    $accounts = mysqli_fetch_all($findAccountResult,MYSQLI_ASSOC);
+                    if(!empty($accounts))
+                    {
+                        $maxNotiIDSql = "SELECT IFNULL(max(Notification_ID),1700) AS Max_ID FROM notification";
+                        $maxNotiIDresult = mysqli_query($conn, $maxNotiIDSql);
+                        $maxNotiID = mysqli_fetch_assoc($maxNotiIDresult);
+                        mysqli_free_result($maxNotiIDresult);
+                        $newID = (int)$maxNotiID['Max_ID'] + 1;
+                        $message = $shop_name." is holding a new sales event, come check out!";
+                        $type = "sale";
+                        $createNotiSql = "INSERT INTO notification 
+                                            VALUES($newID, '$type', '$message')";
+                        $createNotiResult = mysqli_query($conn,$createNotiSql);
+                        echo $conn->error;
+                        foreach($accounts AS $account) {
+                            $customer_id = $account['Customer_Account_ID'];
+                            $datetime = date("Y-m-d H:i:s");
+                            $on_read = (int)0;
+                            $sendNotiSql = "INSERT INTO sends_to_account
+                             VALUES('$newID','$customer_id','$datetime',$on_read);";
+                            $sendNotiResult = mysqli_query($conn, $sendNotiSql);
+                        }
+                        echo $conn->error;
+                    }
                     $msg =  'Insertion succeeded!';
                     $msgClass = 'alert-success ';
-                    header("Location: shopmanage.php");
+                    //header("Location: shopmanage.php");
                 }
                 else
                 {

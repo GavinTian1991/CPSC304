@@ -198,7 +198,7 @@
             }
             mysqli_free_result($checkresult);
 
-            $maxIDquery = "SELECT max(Shop_ID) AS Max_ID FROM milk_tea_shop";
+            $maxIDquery = "SELECT IFNULL(max(Shop_ID),600) AS Max_ID FROM milk_tea_shop";
             $result = mysqli_query($conn, $maxIDquery);
             $max = mysqli_fetch_assoc($result);
             mysqli_free_result($result);

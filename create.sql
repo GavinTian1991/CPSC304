@@ -300,32 +300,32 @@ INSERT INTO Drink_Offered_By VALUES
 CREATE TABLE Notification (
         Notification_ID Integer PRIMARY KEY,
         Type varchar(20),
-        Contents varchar(400) NOT NULL,
-        If_On_Read bit NOT NULL
+        Contents varchar(400) NOT NULL
 );
 
 INSERT INTO Notification VALUES
-    (1701, 'comment', 'You have a new customer comment from Allen Smith.', 0),
-    (1702, 'comment', 'You have a new customer comment from Andy Davis.', 0),
-    (1703, 'feedback', 'You have a new shop feedback from Wushiland Boba.', 0),
-    (1704, 'feedback', 'You have a new shop feedback from Taan Char.', 0),
-    (1705, 'sale', 'You have a new sale from Sharetea', 0);
+    (1701, 'comment', 'You have a new customer comment from Allen Smith.'),
+    (1702, 'comment', 'You have a new customer comment from Andy Davis.'),
+    (1703, 'feedback', 'You have a new shop feedback from Wushiland Boba.'),
+    (1704, 'feedback', 'You have a new shop feedback from Taan Char.'),
+    (1705, 'sale', 'You have a new sale from Sharetea');
 
 CREATE TABLE Sends_To_Account (
         Notification_ID Integer,
         Account_ID Integer,
         Send_Date datetime,
+        If_On_Read bit NOT NULL,
         PRIMARY KEY (Notification_ID, Account_ID),
         FOREIGN KEY (Account_ID) REFERENCES Account (Account_ID) ON UPDATE CASCADE,
         FOREIGN KEY (Notification_ID) REFERENCES Notification (Notification_ID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 INSERT INTO Sends_To_Account VALUES
-    (1701, 106, '2020-5-30'),
-    (1702, 107, '2020-5-17'),
-    (1703, 101, '2020-5-30'),
-    (1704, 102, '2020-5-17'),
-    (1705, 103, '2020-5-30');
+    (1701, 106, '2020-5-30',0),
+    (1702, 107, '2020-5-17',0),
+    (1703, 101, '2020-5-30',0),
+    (1704, 102, '2020-5-17',0),
+    (1705, 103, '2020-5-30',0);
     
 
 
