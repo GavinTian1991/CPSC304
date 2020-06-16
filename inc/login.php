@@ -24,9 +24,8 @@
 			print_r($user);
 
 			if($user){
-				$_SESSION['logged_cust_name'] = $user['User_Name'];
-				$_SESSION['logged_cust_id'] = $user['Account_ID'];
-				echo $_SESSION['logged_cust_name'].$_SESSION['logged_cust_id'];
+				$_SESSION['log_in_customer'] = $user['User_Name'];
+				$_SESSION['log_in_customer_id'] = $user['Account_ID'];
 				$_SESSION['customer_logged_in'] = TRUE;
 				echo 'log in successfully!';
 				header('Location: customer.php');

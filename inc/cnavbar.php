@@ -8,13 +8,13 @@
   $cur_cust_id = '';
 
   if(isset($_SESSION['customer_logged_in'])) {
-      $cur_name = $_SESSION['logged_cust_name'];
-      $cur_cust_id = $_SESSION['logged_cust_id'];
+      $cur_name = $_SESSION['log_in_customer'];
+      $cur_cust_id = $_SESSION['log_in_customer_id'];
   }
 
   if(isset($_POST['logout'])) {
-      unset($_SESSION['logged_cust_name']);
-      unset($_SESSION['logged_cust_id']);
+      unset($_SESSION['log_in_customer']);
+      unset($_SESSION['log_in_customer_id']);
       unset($_SESSION['customer_logged_in']);
       header('Location: ../index.php');
   }

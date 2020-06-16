@@ -143,7 +143,9 @@
             }
         }
     }
-
+    if(isset($_POST['edit_shop'])){
+        header("Location: editstore.php");
+    }
     if(isset($_POST['shop_quit']))
     {
         unset($_SESSION['current_shop_id']);
@@ -195,7 +197,7 @@
 <div id="myTabContent" class="tab-content">
     <div class="tab-pane fade in active show" id="details">
         <div class="card text-white bg-primary mb-3" style="max-width: 20rem;">
-            <div class="card-header">Your account details are below:</div>
+            <div class="card-header">Your shop details are below:</div>
             <div class="card-body">
                 <table class="table table-hover">
                     <tr>
@@ -237,8 +239,7 @@
                 </table>
                 <br>
                 <form action="editstore.php" method="POST">
-                    <input type="hidden" name="shop_id_to_edit" value="<?php echo $curr_shop_id; ?>">
-                    <button type="submit" name="edit_shop" class="btn btn-secondary my-2 my-sm-0">Edit</button>
+                    <button type="submit" name="edit_shop" class="btn btn-secondary my-2 my-sm-0" value="<?php echo $curr_shop_id; ?>">Edit</button>
                 </form>
 
             </div>
@@ -262,7 +263,7 @@
                         <td><?= $hour['Open_Time'];?></td>
                         <td><?= $hour['Close_Time'];?></td>
                         <td>
-                            <a class="nav-link" href="editHour.php?shopid=<?=$curr_shop_id?>&day=<?=$hour['Business_Day']?>">
+                            <a class="nav-link" href="editHour.php?day=<?=$hour['Business_Day']?>">
                                 Edit</a>
                         </td>
                     </tr>

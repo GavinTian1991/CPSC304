@@ -106,13 +106,13 @@
         if(isset($_POST["hasWifi"]))
         {
             $hasWifi = $_POST["hasWifi"];
-            settype($hasWifi, "integer");
+            settype($hasWifi,'integer');
         }
         //Check hasdelivery checkbox
         if(isset($_POST["hasDelivery"]))
         {
             $offerDelivery = $_POST["hasDelivery"];
-            settype($offerDelivery, "integer");
+            settype($offerDelivery,'integer');
         }
         //Check good for group
         if(isset($_POST["shop-groupsize"]))
@@ -205,7 +205,7 @@
 
             $newID = (int)$max['Max_ID'] + 1;
             $storesql = "INSERT INTO milk_tea_shop VALUES('$newID', '$shopName','$address',
-                        '$zipCode','$phoneNumber','$hasWifi','$offerDelivery','$goodForGroup',
+                        '$zipCode','$phoneNumber', $hasWifi, $offerDelivery,'$goodForGroup',
                         '$rating','$priceCode','$owner_id')";
             $storeresult = mysqli_query($conn, $storesql);
             echo ($conn->error);
