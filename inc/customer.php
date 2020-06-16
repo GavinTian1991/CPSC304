@@ -8,7 +8,6 @@
     if(isset($_SESSION['log_in_customer'])) {
         $cur_name = $_SESSION['log_in_customer'];
       }
-
     $msg = '';
 	$msgClass = '';
     

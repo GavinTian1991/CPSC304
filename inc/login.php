@@ -26,7 +26,6 @@
 			if($user){
 				$_SESSION['log_in_customer'] = $user['User_Name'];
 				$_SESSION['log_in_customer_id'] = $user['Account_ID'];
-				$_SESSION['customer_logged_in'] = TRUE;
 				echo 'log in successfully!';
 				header('Location: customer.php');
 			} else {
