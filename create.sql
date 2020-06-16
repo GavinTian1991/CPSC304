@@ -131,12 +131,12 @@ CREATE TABLE Milk_Tea_Shop (
 
 INSERT INTO Milk_Tea_Shop
 VALUES
-      (601, 'Wushiland Boba', '1228 - 8338 Capstan Way', 'V6X 4B5','(604) 285 8668', 0, 1, 0, 502, 106, 0),              
-      (602, 'Taan Char', '7908 Granville St', 'V6P 4Z2','(604) 428 8292', 1, 1, 4, 503, 107, 0),
-      (603, 'Comebuy Bubble Tea', '1610 - 4500 Kingsway', 'V5H 2A9', '(778) 806 1158', 0, 1, 0, 502, 108, 0),
-      (604, 'Taan Char', '1696 - 4500 Kingsway', 'V5H 2A9', '(604) 620 9069', 0, 1, 2, 502, 107, 0),
-      (605, 'Meet Fresh','1232 Robson St', 'V6E 1C2', '(604) 559 7717', 1, 1, 6, 504, 109, 0),
-      (606, 'Sharetea', '435Q North Rd', 'V3K 3V9', '(778) 355 9922', 1, 1, 4, 502, 110, 0);
+      (601, 'Wushiland Boba', '1228 - 8338 Capstan Way', 'V6X 4B5','(604) 285 8668', 0, 1, 0, 0, 502, 106),
+      (602, 'Taan Char', '7908 Granville St', 'V6P 4Z2','(604) 428 8292', 1, 1, 4, 0, 503, 107),
+      (603, 'Comebuy Bubble Tea', '1610 - 4500 Kingsway', 'V5H 2A9', '(778) 806 1158', 0, 1, 0, 0, 502, 108),
+      (604, 'Taan Char', '1696 - 4500 Kingsway', 'V5H 2A9', '(604) 620 9069', 0, 1, 2, 0, 502, 107),
+      (605, 'Meet Fresh','1232 Robson St', 'V6E 1C2', '(604) 559 7717', 1, 1, 6, 0, 504, 109),
+      (606, 'Sharetea', '435Q North Rd', 'V3K 3V9', '(778) 355 9922', 1, 1, 4, 0, 502, 110);
 
 CREATE TABLE Comments_from_Customer (
         Comment_ID integer PRIMARY KEY,
