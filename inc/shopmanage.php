@@ -131,6 +131,7 @@
             //Delete drink name is type after
             $deleteTypeofSql = "DELETE FROM drink_is_typeof WHERE Drink_Name = '$drinkNameDelete'";
             $deleteTypeofResult = mysqli_query($conn, $deleteTypeofSql);
+            //Note that offer by delete on cascade
             if($deleteDrinkResult && $deleteTypeofResult)
             {
                 $msg = "Delete drink information success!";

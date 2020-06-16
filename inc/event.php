@@ -118,7 +118,7 @@
                     }
                     $msg =  'Insertion succeeded!';
                     $msgClass = 'alert-success ';
-                    //header("Location: shopmanage.php");
+                    header("Location: shopmanage.php");
                 }
                 else
                 {
