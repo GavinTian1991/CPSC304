@@ -30,7 +30,7 @@
         $pricequery = "SELECT mts.Shop_ID, mts.Shop_Name, mts.Address, mts.Zip_Code, mts.Phone_Number, 
         mts.Has_Wifi, mts.Good_For_Group, mts.Price_ID 
         FROM Milk_Tea_Shop mts 
-        WHERE mts.Price_ID >= '$pricelevel'";
+        WHERE mts.Price_ID <= '$pricelevel'";
 
         $ratinglevelquery = "SELECT mts.Shop_ID, mts.Shop_Name, mts.Address, mts.Zip_Code, mts.Phone_Number, 
         mts.Has_Wifi, mts.Good_For_Group, mts.Price_ID 
