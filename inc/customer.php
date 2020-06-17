@@ -120,23 +120,26 @@
 
     $ratingMaxMinPosts = [];
     if(isset($_POST['ratingMaxMin'])){
-
-        $ratingMaxMinSelection = $_POST['ratingExtreValue'];
-        $ratingMaxMinQuery = '';
-        if($ratingMaxMinSelection == 'maxRating') {
-            $ratingMaxMinQuery = "SELECT mts.Shop_Name, mts.Zip_Code, mts.Average_Rating FROM milk_tea_shop mts where 
-            mts.Average_Rating = (SELECT max(Average_Rating) FROM milk_tea_shop)";
-        } else {
-            $ratingMaxMinQuery = "SELECT mts.Shop_Name, mts.Zip_Code, mts.Average_Rating FROM milk_tea_shop mts where 
-            mts.Average_Rating = (SELECT min(Average_Rating) FROM milk_tea_shop WHERE Average_Rating != 0)";
+        if(isset($_POST['ratingExtreValue'])){
+            if($_POST['ratingExtreValue']!= 'none'){
+                $ratingMaxMinSelection = $_POST['ratingExtreValue'];
+                $ratingMaxMinQuery = "SELECT mts.Shop_Name, mts.Zip_Code, mts.Average_Rating FROM milk_tea_shop mts where 
+                mts.Average_Rating = (SELECT %s(Average_Rating) FROM milk_tea_shop WHERE Average_Rating!=0)";
+                $subquery = mysqli_real_escape_string($conn, $_POST['ratingExtreValue']);
+                $ratingMaxMinQuery = sprintf($ratingMaxMinQuery, $subquery);
+                $ratingMaxMinResult = mysqli_query($conn, $ratingMaxMinQuery);
+                $ratingMaxMinPosts = mysqli_fetch_all($ratingMaxMinResult, MYSQLI_ASSOC);
+            }else{
+                $msg = 'Please choose an option';
+                $msgClass = 'alert-danger alert-dismissible';
+            }
+        }else{
+            $msg = 'Please choose an option';
+            $msgClass = 'alert-danger alert-dismissible';
         }
 
-        $ratingMaxMinResult = mysqli_query($conn, $ratingMaxMinQuery);
-        $ratingMaxMinPosts = mysqli_fetch_all($ratingMaxMinResult, MYSQLI_ASSOC);
+
     }
-
-
-
 
     if(isset($_POST['gotoMTS'])){
         session_start();
@@ -308,11 +311,6 @@
         </form>
 
 
-
-
-
-
-
         <br>
         <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
             <div class="container">
@@ -403,9 +401,9 @@
                 <div class="row">
                     <div class="col-sm">
                         <select name="ratingExtreValue" class="custom-select" required>
-                            <option selected="" value="">Rating</option>
-                            <option value="maxRating">Maximum</option>
-                            <option value="minRating">Minimum</option>
+                            <option selected="" value="none">Rating</option>
+                            <option value="MAX">Maximum</option>
+                            <option value="MIN">Minimum</option>
                         </select>
                     </div>
                     <div class="col-sm">
@@ -415,7 +413,6 @@
                     <div class="card border-primary mb-3" style="max-width: 20rem;">
                         <div class="card-header">Shop with max or min average rating</div>
                         <div class="card-body">
-                        
                             <?php foreach($ratingMaxMinPosts as $ratingMaxMin) : ?>
                                 <div class="row">
                                     <div class="col-sm">
@@ -428,23 +425,13 @@
                                         <?php echo $ratingMaxMin['Average_Rating']?>
                                     </div>
                                 </div>
-                            <?php endforeach; ?> 
-                             
-                        
-
+                            <?php endforeach; ?>
                         </div>
                     </div>
                     </div>
                 </div>
             </div>
         </form>
-
-
-
-
-
-
-
 	</div>
     <?php include('footer.php'); ?>
 </body>

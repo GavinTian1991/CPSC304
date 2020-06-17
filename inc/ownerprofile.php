@@ -113,7 +113,6 @@
         $projectionSql = $projectionSql." m.Average_Rating FROM milk_tea_shop m 
         WHERE m.Owner_ID = '$cur_owner_id' AND m.Average_Rating = 
         (SELECT max(m1.Average_Rating) FROM milk_tea_shop m1 WHERE m1.Owner_ID = m.Owner_ID);";
-        //echo $projectionSql;
         $projectionResult = mysqli_query($conn, $projectionSql);
         $highestStores = mysqli_fetch_all($projectionResult, MYSQLI_ASSOC);
         echo $conn->error;
@@ -121,16 +120,70 @@
     $badRatings = [];
     if(isset($_POST['search_rating']))
     {
-        $badRatingSql = "SELECT m.Shop_Name, min(cc.Rating_Level) as minRate
-        FROM comments_from_customer cc, milk_tea_shop m
-        WHERE cc.Shop_ID = m.Shop_ID AND cc.Shop_ID IN(
-            SELECT m2.Shop_ID
-            FROM milk_tea_shop m2
-            WHERE m2.Owner_ID = '$cur_owner_id'
-        )
-        GROUP BY cc.Shop_ID, m.Shop_Name;";
-        $badRatingResult = mysqli_query($conn, $badRatingSql);
-        $badRatings = mysqli_fetch_all($badRatingResult, MYSQLI_ASSOC);
+        if(isset($_POST['criteria_option'])){
+            if($_POST['criteria_option'] != 'none')
+            {
+                $badRatingSql = "SELECT m.Shop_Name, min(cc.Rating_Level) as minRate
+                FROM comments_from_customer cc, milk_tea_shop m
+                WHERE cc.Shop_ID = m.Shop_ID AND cc.Shop_ID IN(
+                    SELECT m2.Shop_ID
+                    FROM milk_tea_shop m2
+                    WHERE m2.Owner_ID = '$cur_owner_id'
+                )
+                GROUP BY m.%s, m.Shop_Name;";
+                $subquery = mysqli_real_escape_string($conn, $_POST['criteria_option']);
+                $badRatingSql = sprintf($badRatingSql, $subquery);
+                $badRatingResult = mysqli_query($conn, $badRatingSql);
+                $badRatings = mysqli_fetch_all($badRatingResult, MYSQLI_ASSOC);
+            }
+            else{
+                $msg = 'Please choose an option';
+                $msgClass = 'alert-danger alert-dismissible';
+            }
+        }
+        else{
+            $msg = 'Please choose an option';
+            $msgClass = 'alert-danger alert-dismissible';
+        }
+
+    }
+
+    $customerNames = [];
+    if(isset($_POST['search_customer']))
+    {
+        if(isset($_POST['customer_option']))
+        {
+            if($_POST['customer_option']!= 'none'){
+                $mainquery = "SELECT DISTINCT a.User_Name 
+                    FROM account a, milk_tea_shop m, %s 
+                    WHERE a.Account_ID=%s AND m.Shop_ID=%s AND m.Owner_ID=$cur_owner_id 
+                    ORDER BY a.User_Name;";
+                if($_POST['customer_option'] == 'favor')
+                {
+                    $subquery1 = "favored_by f";
+                    $subquery2 = "f.Customer_Account_ID";
+                    $subquery3 = "f.Shop_ID";
+                }
+                if($_POST['customer_option'] == 'comment')
+                {
+                    $subquery1 = "comments_from_customer cc";
+                    $subquery2 = "cc.Account_ID";
+                    $subquery3 = "cc.Shop_ID";
+                }
+                $customerSql = sprintf($mainquery, $subquery1, $subquery2, $subquery3);
+                $customerResult = mysqli_query($conn, $customerSql);
+                $customerNames = mysqli_fetch_all($customerResult, MYSQLI_ASSOC);
+                echo $conn->error;
+            }
+            else{
+                $msg = 'Please choose an option';
+                $msgClass = 'alert-danger alert-dismissible';
+            }
+        }
+        else{
+            $msg = 'Please choose an option';
+            $msgClass = 'alert-danger alert-dismissible';
+        }
     }
     if(isset($_POST['edit_owner']))
     {
@@ -360,7 +413,47 @@
             <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
                 <legend>Find the lowest rating for each of your stores</legend>
                 <p>(0 means this store has not be commented by any customer)</p>
+                <p>Choose your search criteria, searching by shop id is safer</p>
+                <div class="form-group">
+                    <select name="criteria_option" class="custom-select">
+                        <option selected="" value="none">Option</option>
+                        <option value="Shop_ID">by shop ID</option>
+                        <option value="Zip_Code">by Zip Code</option>
+                    </select>
+                </div>
                 <button type="submit" name="search_rating" class="btn btn-primary">Search</button>
+            </form>
+        </div>
+    </div>
+    <br><br>
+    <div class="row">
+        <div class="col-sm">
+            <table class = "table table-hover">
+                <thead>
+                <tr>
+                    <th scope="col">Customer Name</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach($customerNames AS $customerName):?>
+                    <tr>
+                        <td><?=$customerName['User_Name']?></td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-sm">
+            <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+                <legend>Find all the customer who have favored your store or commented your store</legend>
+                <div class="form-group">
+                    <select name="customer_option" class="custom-select">
+                        <option selected="" value="none">Option</option>
+                        <option value="favor">Favored</option>
+                        <option value="comment">Commented</option>
+                    </select>
+                </div>
+                <button type="submit" name="search_customer" class="btn btn-primary">Search</button>
             </form>
         </div>
     </div>
