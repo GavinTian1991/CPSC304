@@ -277,6 +277,7 @@
         <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
             <legend>Find your highest rated store(s)</legend>
             <label>Pick the attributes you want to view</label>
+            <p>(0 means this store has not be commented by any customer)</p>
             <div class="col-sm">
             <div class="form-group">
                 <div class="form-check">
@@ -358,6 +359,7 @@
         <div class="col-sm">
             <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
                 <legend>Find the lowest rating for each of your stores</legend>
+                <p>(0 means this store has not be commented by any customer)</p>
                 <button type="submit" name="search_rating" class="btn btn-primary">Search</button>
             </form>
         </div>
