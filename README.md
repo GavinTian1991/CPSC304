@@ -1,8 +1,20 @@
-# CPSC304
+# CPSC304 Group Project - Implementation of a Relational Database
 
 Milk Tea Shop Recommendation Platform
 PHP + Mysql
 
+## Project Group No.23
+Xiaojun Tian 11240587
+Jiefei Li 59322511
+
+## Repository Content
+### All Source Codes
+### A SQL script to create the basic database
+Note the application may fail if the database is not populated with preset data in the script.
+
+## Running Environment
+XAMPP with PHP and MySQL, tested with PHP 7.47 and Windows.<br>
+Caution! code may not run on a Mac without proper configuration!
 
 ## Pages
 ### Main page
@@ -29,4 +41,3 @@ Customer can see the milk tea shop details which are: open hours, sale event, dr
 ### Customer profile main page
 ![image](https://github.com/GavinTian1991/CPSC304/raw/master/screenshots/customer_profile.png)
 Customer can change their general profile like name, email, password, etc. Also, they can update and delete itme from their shop like list and comment list.
-
