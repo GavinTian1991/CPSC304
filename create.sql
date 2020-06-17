@@ -1,23 +1,5 @@
-
-DROP TABLE Sends_To_Account;
-DROP TABLE Notification;
-DROP TABLE Drink_Offered_By;
-DROP TABLE Drinks;
-DROP TABLE Drink_Is_Typeof;
-DROP TABLE Shared_Drink_Types;
-DROP TABLE Holds_Sales_Event;
-DROP TABLE Open_At_Business_Hour;
-DROP TABLE Favored_by;
-DROP TABLE Reply_with_Feedback;
-DROP TABLE Comments_from_Customer;
-DROP TABLE Milk_Tea_Shop;
-DROP TABLE Zipcode_To_Region;
-DROP TABLE Price_Level;
-DROP TABLE Region;
-DROP TABLE Business_Owner_Account;
-DROP TABLE Customer_Account;
-DROP TABLE Account;
-
+CREATE DATABASE MTS;
+USE MTS;
 
 
 CREATE TABLE Account (
