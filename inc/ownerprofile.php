@@ -154,10 +154,21 @@
         if(isset($_POST['customer_option']))
         {
             if($_POST['customer_option']!= 'none'){
-                $mainquery = "SELECT DISTINCT a.User_Name 
-                    FROM account a, milk_tea_shop m, %s 
-                    WHERE a.Account_ID=%s AND m.Shop_ID=%s AND m.Owner_ID=$cur_owner_id 
-                    ORDER BY a.User_Name;";
+                /*$mainquery = "SELECT DISTINCT a.User_Name
+                    FROM account a, milk_tea_shop m, %s
+                    WHERE a.Account_ID=%s AND m.Shop_ID=%s AND m.Owner_ID=$cur_owner_id
+                    ORDER BY a.User_Name;";*/
+                $mainquery = "SELECT DISTINCT a.User_Name
+                            FROM account a
+                            INNER JOIN
+                            %s
+                            ON a.Account_ID=%s
+                            INNER JOIN
+                            milk_tea_shop m
+                            ON m.Shop_ID=%s
+                            WHERE m.Owner_ID=$cur_owner_id
+                            ORDER BY a.User_Name;";
+
                 if($_POST['customer_option'] == 'favor')
                 {
                     $subquery1 = "favored_by f";
