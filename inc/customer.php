@@ -319,7 +319,10 @@
                 <div class="row">
                     <div class="col-sm">
                         <button type="submit" name="favored_by_all_search" class="btn btn-primary">Which shop(s) favored by all customers?</button>
-                        <?php if (empty($favoredByAllSearchPosts)): ?>
+                    </div>
+                    
+                    <div class="col-sm">
+                    <?php if (empty($favoredByAllSearchPosts)): ?>
                             <p>No shop favored by all customers</p>
                         <?php else: ?>
                         <?php foreach($favoredByAllSearchPosts as $favoredByShop) : ?>
@@ -330,7 +333,8 @@
                             </div>
                         <?php endforeach; ?>    
                         <?php endif; ?>
-                    </div>
+                        </div>
+
                     <div class="col-sm">
                         <?php if ($cur_name != 'anonymous'): ?>
                             <button id="general_button" type="button" class="btn btn-primary" data-toggle="modal" data-target="#notification_display">
